@@ -45,7 +45,6 @@ public class JeuSociete {
     // Constructeurs, getters et setters
 
     public JeuSociete() {
-        this.tempsDeJeuEnMinutes = Duration.ofMinutes(0);
     }
 
     public JeuSociete(String nom, TypeJeu typeDeJeu, Integer nombreJoueursMin, Integer nombreJoueursMax, Integer ageMinimum, Duration tempsDeJeuEnMinutes, byte[] image) {

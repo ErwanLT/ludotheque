@@ -36,7 +36,6 @@ public class GamesListView extends VerticalLayout{
         configureForm();
         add(getToolbar(), getContent());
         updateList();
-        closeEditor();
     }
 
     private void updateList() {
@@ -48,21 +47,6 @@ public class GamesListView extends VerticalLayout{
     private void configureForm() {
         gameForm = new GameForm();
         gameForm.setWidth("25em");
-        gameForm.addListener(GameForm.SaveEvent.class, this::saveGame);
-        gameForm.addListener(GameForm.DeleteEvent.class, this::deleteGame);
-        gameForm.addListener(GameForm.CloseEvent.class, e -> closeEditor());
-    }
-
-    private void deleteGame(GameForm.DeleteEvent deleteEvent) {
-        service.deleteGame(deleteEvent.getJeuSociete());
-        updateList();
-        closeEditor();
-    }
-
-    private void saveGame(GameForm.SaveEvent saveEvent) {
-        service.saveGame(saveEvent.getJeuSociete());
-        updateList();
-        closeEditor();
     }
 
     private HorizontalLayout getContent() {
@@ -80,7 +64,6 @@ public class GamesListView extends VerticalLayout{
         filterText.addValueChangeListener(e -> updateList());
 
         Button addContactButton = new Button("Ajouter jeu");
-        addContactButton.addClickListener(click -> addGame());
 
         HorizontalLayout toolbar = new HorizontalLayout(filterText, addContactButton);
         toolbar.addClassName("toolbar");
@@ -104,32 +87,10 @@ public class GamesListView extends VerticalLayout{
         });
 
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.asSingleSelect().addValueChangeListener(event ->
-                editGame(event.getValue()));
     }
 
     public static Image createImageFromBytes(byte[] imageBytes, String altText) {
         StreamResource resource = new StreamResource("image", () -> new ByteArrayInputStream(imageBytes));
         return new Image(resource, altText);
-    }
-
-    private void closeEditor() {
-        gameForm.setJeuSociete(null);
-        gameForm.setVisible(false);
-        removeClassName("editing");
-    }
-
-    public void editGame(JeuSociete jeuSociete) {
-        if (jeuSociete == null) {
-            closeEditor();
-        } else {
-            gameForm.setJeuSociete(jeuSociete);
-            gameForm.setVisible(true);
-        }
-    }
-
-    private void addGame() {
-        grid.asSingleSelect().clear();
-        editGame(new JeuSociete());
     }
 }

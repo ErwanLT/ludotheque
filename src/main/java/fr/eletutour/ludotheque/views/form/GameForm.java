@@ -59,22 +59,24 @@ public class GameForm extends FormLayout {
             }
         });
 
-        binder.forField(typeJeu)
-                .bind(JeuSociete::getTypeDeJeu, JeuSociete::setTypeDeJeu);
         // Binder configuration with Converters for NumberFields
         binder.forField(minJoueur)
                 .withConverter(new DoubleToIntegerConverter())
                 .bind(JeuSociete::getNombreJoueursMin, JeuSociete::setNombreJoueursMin);
+
         binder.forField(maxJoueur)
                 .withConverter(new DoubleToIntegerConverter())
                 .bind(JeuSociete::getNombreJoueursMax, JeuSociete::setNombreJoueursMax);
+
         binder.forField(ageMinimum)
                 .withConverter(new DoubleToIntegerConverter())
                 .bind(JeuSociete::getAgeMinimum, JeuSociete::setAgeMinimum);
+
         binder.forField(tempsDeJeu)
                 .withConverter(new DoubleToLongConverter())
                 .bind(jeu -> jeu.getTempsDeJeuEnMinutes().toMinutes(),
                         (jeu, value) -> jeu.setTempsDeJeuEnMinutes(Duration.ofMinutes(value)));
+
         // Bind remaining fields
         binder.bindInstanceFields(this);
 
