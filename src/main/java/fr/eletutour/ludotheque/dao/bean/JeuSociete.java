@@ -7,6 +7,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Lob;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.Duration;
 
 @Entity
@@ -16,26 +20,40 @@ public class JeuSociete {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Le nom du jeu est obligatoire")
     private String nom;
-    private int nombreJoueursMin;
-    private int nombreJoueursMax;
-    private int ageMinimum;
+
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "Le type de jeu est obligatoire")
     private TypeJeu typeDeJeu;
-    private long tempsDeJeuEnMinutes;
+
+    @Min(value = 1, message = "Le nombre minimum de joueurs doit être au moins de 1")
+    private Integer nombreJoueursMin;
+
+    @Min(value = 1, message = "Le nombre maximum de joueurs doit être au moins de 1")
+    private Integer nombreJoueursMax;
+
+    @Min(value = 0, message = "L'âge minimum doit être supérieur ou égal à 0")
+    private Integer ageMinimum;
+
+    @NotNull(message = "Le temps de jeu est obligatoire")
+    private Duration tempsDeJeuEnMinutes;
+
     @Lob
-    private byte[] image; // Champ pour stocker l'image en BLOB
+    private byte[] image;
 
+    // Constructeurs, getters et setters
 
-    public JeuSociete() {}
+    public JeuSociete() {
+    }
 
-    public JeuSociete(String nom, int nombreJoueursMin, int nombreJoueursMax, int ageMinimum, TypeJeu typeDeJeu, Duration tempsDeJeu, byte[] image) {
+    public JeuSociete(String nom, TypeJeu typeDeJeu, Integer nombreJoueursMin, Integer nombreJoueursMax, Integer ageMinimum, Duration tempsDeJeuEnMinutes, byte[] image) {
         this.nom = nom;
+        this.typeDeJeu = typeDeJeu;
         this.nombreJoueursMin = nombreJoueursMin;
         this.nombreJoueursMax = nombreJoueursMax;
         this.ageMinimum = ageMinimum;
-        this.typeDeJeu = typeDeJeu;
-        this.tempsDeJeuEnMinutes = tempsDeJeu.toMinutes();
+        this.tempsDeJeuEnMinutes = tempsDeJeuEnMinutes;
         this.image = image;
     }
 
@@ -57,34 +75,6 @@ public class JeuSociete {
         this.nom = nom;
     }
 
-    public int getNombreJoueursMin() {
-        return nombreJoueursMin;
-    }
-
-    public void setNombreJoueursMin(int nombreJoueursMin) {
-        this.nombreJoueursMin = nombreJoueursMin;
-    }
-
-    public int getNombreJoueursMax() {
-        return nombreJoueursMax;
-    }
-
-    public void setNombreJoueursMax(int nombreJoueursMax) {
-        this.nombreJoueursMax = nombreJoueursMax;
-    }
-
-    public String getNombreJoueurs(){
-        return nombreJoueursMin + " - " + nombreJoueursMax;
-    }
-
-    public int getAgeMinimum() {
-        return ageMinimum;
-    }
-
-    public void setAgeMinimum(int ageMinimum) {
-        this.ageMinimum = ageMinimum;
-    }
-
     public TypeJeu getTypeDeJeu() {
         return typeDeJeu;
     }
@@ -93,12 +83,46 @@ public class JeuSociete {
         this.typeDeJeu = typeDeJeu;
     }
 
-    public Duration getTempsDeJeu() {
-        return Duration.ofMinutes(tempsDeJeuEnMinutes);
+    public Integer getNombreJoueursMin() {
+        return nombreJoueursMin;
     }
 
-    public void setTempsDeJeu(Duration tempsDeJeu) {
-        this.tempsDeJeuEnMinutes = tempsDeJeu.toMinutes();
+    public void setNombreJoueursMin(Integer nombreJoueursMin) {
+        this.nombreJoueursMin = nombreJoueursMin;
+    }
+
+    public Integer getNombreJoueursMax() {
+        return nombreJoueursMax;
+    }
+
+    public void setNombreJoueursMax(Integer nombreJoueursMax) {
+        this.nombreJoueursMax = nombreJoueursMax;
+    }
+
+    public Integer getAgeMinimum() {
+        return ageMinimum;
+    }
+
+    public void setAgeMinimum(Integer ageMinimum) {
+        this.ageMinimum = ageMinimum;
+    }
+
+    public Duration getTempsDeJeuEnMinutes() {
+        return tempsDeJeuEnMinutes;
+    }
+
+    public void setTempsDeJeuEnMinutes(Duration tempsDeJeuEnMinutes) {
+        this.tempsDeJeuEnMinutes = tempsDeJeuEnMinutes;
+    }
+
+    public String getFormattedTempsDeJeu() {
+        long hours = tempsDeJeuEnMinutes.toHours();
+        long minutes = tempsDeJeuEnMinutes.toMinutes() % 60;
+        if (hours > 0) {
+            return String.format("%d h %02d min", hours, minutes);
+        } else {
+            return String.format("%d min", minutes);
+        }
     }
 
     public byte[] getImage() {
@@ -107,14 +131,5 @@ public class JeuSociete {
 
     public void setImage(byte[] image) {
         this.image = image;
-    }
-
-    @Override
-    public String toString() {
-        return "Jeu de société: " + nom + "\n" +
-                "Type: " + typeDeJeu + "\n" +
-                "Nombre de joueurs: " + nombreJoueursMin + " - " + nombreJoueursMax + "\n" +
-                "Âge minimum: " + ageMinimum + " ans\n" +
-                "Temps de jeu: " + tempsDeJeuEnMinutes + " minutes";
     }
 }

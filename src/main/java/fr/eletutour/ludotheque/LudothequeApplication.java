@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.io.ClassPathResource;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.Arrays;
 
@@ -22,39 +25,49 @@ public class LudothequeApplication implements CommandLineRunner {
 	}
 
 	@Override
-	public void run(String... args) {
+	public void run(String... args) throws IOException {
+
+		byte[] unoImage = loadImage("images/uno.png");
+		byte[] monopolyImage = loadImage("images/monopoly.png");
+		byte[] catanImage = loadImage("images/catan.png");
+
 		// Initialisation des jeux de société
 		JeuSociete monopoly = new JeuSociete(
 				"Monopoly",
+				TypeJeu.PLATEAU,
 				2,
 				8,
 				8,
-				TypeJeu.PLATEAU,
 				Duration.ofMinutes(120),
-				null
+				monopolyImage
 		);
 
 		JeuSociete catan = new JeuSociete(
 				"Les Colons de Catane",
+				TypeJeu.STRATEGIE,
 				3,
 				4,
 				10,
-				TypeJeu.STRATEGIE,
 				Duration.ofMinutes(90),
-				null
+				catanImage
 		);
 
 		JeuSociete uno = new JeuSociete(
 				"Uno",
+				TypeJeu.CARTES,
 				2,
 				10,
 				7,
-				TypeJeu.CARTES,
 				Duration.ofMinutes(30),
-				null
+				unoImage
 		);
 
 		// Sauvegarder les jeux dans la base de données
 		jeuSocieteRepository.saveAll(Arrays.asList(monopoly, catan, uno));
+	}
+
+	private byte[] loadImage(String path) throws IOException {
+		ClassPathResource imgFile = new ClassPathResource(path);
+		return Files.readAllBytes(imgFile.getFile().toPath());
 	}
 }
