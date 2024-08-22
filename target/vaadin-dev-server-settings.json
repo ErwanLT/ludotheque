@@ -1,0 +1,17 @@
+{
+  "frontendFolder": "/Users/ewanletutour/Desktop/git/ludotheque/./src/main/frontend",
+  "themeFolder": "themes",
+  "themeResourceFolder": "/Users/ewanletutour/Desktop/git/ludotheque/./src/main/frontend/generated/jar-resources",
+  "staticOutput": "/Users/ewanletutour/Desktop/git/ludotheque/target/classes/META-INF/VAADIN/webapp/VAADIN/static",
+  "generatedFolder": "generated",
+  "statsOutput": "/Users/ewanletutour/Desktop/git/ludotheque/target/classes/META-INF/VAADIN/config",
+  "frontendBundleOutput": "/Users/ewanletutour/Desktop/git/ludotheque/target/classes/META-INF/VAADIN/webapp",
+  "devBundleOutput": "/Users/ewanletutour/Desktop/git/ludotheque/target/dev-bundle/webapp",
+  "devBundleStatsOutput": "/Users/ewanletutour/Desktop/git/ludotheque/target/dev-bundle/config",
+  "jarResourcesFolder": "/Users/ewanletutour/Desktop/git/ludotheque/./src/main/frontend/generated/jar-resources",
+  "themeName": "",
+  "clientServiceWorkerSource": "/Users/ewanletutour/Desktop/git/ludotheque/target/sw.ts",
+  "pwaEnabled": false,
+  "offlineEnabled": false,
+  "offlinePath": "'offline.html'"
+}
