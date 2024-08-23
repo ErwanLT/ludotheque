@@ -17,6 +17,7 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.shared.Registration;
+import elemental.json.Json;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 
@@ -92,6 +93,10 @@ public class GameForm extends FormLayout {
 
     public void setJeuSociete(JeuSociete jeuSociete) {
         this.jeuSociete = jeuSociete;
+        if (jeuSociete != null && jeuSociete.getImage() != null) {
+            // Assurez-vous que l'image existante est affichée correctement si nécessaire
+            imageUpload.getElement().setPropertyJson("files", Json.createArray());
+        }
         binder.readBean(jeuSociete);
     }
 
@@ -149,6 +154,7 @@ public class GameForm extends FormLayout {
     public static class CloseEvent extends GameFormEvent {
         CloseEvent(GameForm source) {
             super(source, null);
+            source.imageUpload.getElement().setPropertyJson("files", Json.createArray());
         }
     }
 

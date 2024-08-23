@@ -9,7 +9,7 @@
   "devBundleOutput": "/Users/ewanletutour/Desktop/git/ludotheque/target/dev-bundle/webapp",
   "devBundleStatsOutput": "/Users/ewanletutour/Desktop/git/ludotheque/target/dev-bundle/config",
   "jarResourcesFolder": "/Users/ewanletutour/Desktop/git/ludotheque/./src/main/frontend/generated/jar-resources",
-  "themeName": "",
+  "themeName": "my-theme",
   "clientServiceWorkerSource": "/Users/ewanletutour/Desktop/git/ludotheque/target/sw.ts",
   "pwaEnabled": false,
   "offlineEnabled": false,

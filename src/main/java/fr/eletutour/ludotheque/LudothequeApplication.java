@@ -1,5 +1,7 @@
 package fr.eletutour.ludotheque;
 
+import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.theme.Theme;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
@@ -15,7 +17,8 @@ import java.time.Duration;
 import java.util.Arrays;
 
 @SpringBootApplication
-public class LudothequeApplication implements CommandLineRunner {
+@Theme("my-theme")
+public class LudothequeApplication implements CommandLineRunner, AppShellConfigurator {
 
 	@Autowired
 	private JeuSocieteRepository jeuSocieteRepository;

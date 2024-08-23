@@ -1,6 +1,6 @@
 package fr.eletutour.ludotheque.views;
 
-import com.vaadin.flow.component.Component;
+
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -13,13 +13,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
-import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
 import fr.eletutour.ludotheque.service.GameService;
 import fr.eletutour.ludotheque.views.form.GameForm;
 
 import java.io.ByteArrayInputStream;
 
-@Route("/jeux")
+@Route(value="", layout = MainLayout.class)
 @PageTitle("Mes jeux")
 public class GamesListView extends VerticalLayout{
 
