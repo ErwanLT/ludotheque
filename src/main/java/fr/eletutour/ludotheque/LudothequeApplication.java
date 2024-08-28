@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Set;
 
 @SpringBootApplication
 @Theme("my-theme")
@@ -37,7 +38,7 @@ public class LudothequeApplication implements CommandLineRunner, AppShellConfigu
 		// Initialisation des jeux de société
 		JeuSociete monopoly = new JeuSociete(
 				"Monopoly",
-				TypeJeu.PLATEAU,
+				Set.of(TypeJeu.PLATEAU),
 				2,
 				8,
 				8,
@@ -47,7 +48,7 @@ public class LudothequeApplication implements CommandLineRunner, AppShellConfigu
 
 		JeuSociete catan = new JeuSociete(
 				"Les Colons de Catane",
-				TypeJeu.STRATEGIE,
+				Set.of(TypeJeu.STRATEGIE),
 				3,
 				4,
 				10,
@@ -57,7 +58,7 @@ public class LudothequeApplication implements CommandLineRunner, AppShellConfigu
 
 		JeuSociete uno = new JeuSociete(
 				"Uno",
-				TypeJeu.CARTES,
+				Set.of(TypeJeu.CARTES),
 				2,
 				10,
 				7,

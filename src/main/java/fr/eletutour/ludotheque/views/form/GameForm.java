@@ -7,6 +7,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -29,7 +30,7 @@ public class GameForm extends FormLayout {
     Binder<JeuSociete> binder = new BeanValidationBinder<>(JeuSociete.class);
 
     TextField nom = new TextField("Nom du jeu");
-    ComboBox<TypeJeu> typeJeu = new ComboBox<>("Type de jeu");
+    MultiSelectComboBox<TypeJeu> typeJeu = new MultiSelectComboBox<>("Type de jeu");
     NumberField minJoueur = new NumberField("Nombre de joueur minimum");
     NumberField maxJoueur = new NumberField("Nombre de joueur maximum");
     NumberField ageMinimum = new NumberField("Âge minimum requis");
@@ -60,8 +61,6 @@ public class GameForm extends FormLayout {
             }
         });
 
-        binder.forField(typeJeu)
-                .bind(JeuSociete::getTypeDeJeu, JeuSociete::setTypeDeJeu);
         // Binder configuration with Converters for NumberFields
         binder.forField(minJoueur)
                 .withConverter(new DoubleToIntegerConverter())
@@ -76,7 +75,9 @@ public class GameForm extends FormLayout {
                 .withConverter(new DoubleToLongConverter())
                 .bind(jeu -> jeu.getTempsDeJeuEnMinutes().toMinutes(),
                         (jeu, value) -> jeu.setTempsDeJeuEnMinutes(Duration.ofMinutes(value)));
-        // Bind remaining fields
+        binder.forField(typeJeu)
+                        .bind(JeuSociete::getTypeDeJeu, JeuSociete::setTypeDeJeu);
+
         binder.bindInstanceFields(this);
 
         add(

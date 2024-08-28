@@ -10,6 +10,7 @@ import com.vaadin.flow.router.PageTitle;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
+import fr.eletutour.ludotheque.service.GameService;
 
 import java.time.Duration;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.Random;
 @PageTitle("Jeu Aléatoire | Ma Ludothèque")
 public class RandomGameSearchView extends VerticalLayout {
 
-    private final JeuSocieteRepository jeuSocieteRepository;
+    private final GameService gameService;
 
     private ComboBox<TypeJeu> typeJeu = new ComboBox<>("Type de jeu");
     private NumberField nombreDeJoueurs = new NumberField("Nombre de joueurs");
@@ -28,8 +29,8 @@ public class RandomGameSearchView extends VerticalLayout {
     private Button searchButton = new Button("Chercher un jeu aléatoire");
     private Div result = new Div();
 
-    public RandomGameSearchView(JeuSocieteRepository jeuSocieteRepository) {
-        this.jeuSocieteRepository = jeuSocieteRepository;
+    public RandomGameSearchView(GameService gameService) {
+        this.gameService = gameService;
 
         typeJeu.setItems(TypeJeu.values());
         typeJeu.setItemLabelGenerator(TypeJeu::name);
@@ -50,7 +51,7 @@ public class RandomGameSearchView extends VerticalLayout {
     }
 
     private Optional<JeuSociete> findRandomGame(TypeJeu typeJeu, Integer nombreDeJoueurs, Duration tempsDeJeu) {
-        List<JeuSociete> jeux = jeuSocieteRepository.findByCriteria(typeJeu, nombreDeJoueurs, tempsDeJeu);
+        List<JeuSociete> jeux = gameService.findRandomGame(typeJeu, nombreDeJoueurs, tempsDeJeu);
         if (jeux.isEmpty()) {
             return Optional.empty();
         }

@@ -1,17 +1,12 @@
 package fr.eletutour.ludotheque.dao.bean;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Duration;
+import java.util.Set;
 
 @Entity
 public class JeuSociete {
@@ -23,9 +18,10 @@ public class JeuSociete {
     @NotBlank(message = "Le nom du jeu est obligatoire")
     private String nom;
 
-    @Enumerated(EnumType.STRING)
+
     @NotNull(message = "Le type de jeu est obligatoire")
-    private TypeJeu typeDeJeu;
+    @Convert(converter = TypeJeuConverter.class)
+    private Set<TypeJeu> typeDeJeu;
 
     @Min(value = 1, message = "Le nombre minimum de joueurs doit être au moins de 1")
     private Integer nombreJoueursMin;
@@ -48,7 +44,7 @@ public class JeuSociete {
         this.tempsDeJeuEnMinutes = Duration.ofMinutes(0);
     }
 
-    public JeuSociete(String nom, TypeJeu typeDeJeu, Integer nombreJoueursMin, Integer nombreJoueursMax, Integer ageMinimum, Duration tempsDeJeuEnMinutes, byte[] image) {
+    public JeuSociete(String nom, Set<TypeJeu> typeDeJeu, Integer nombreJoueursMin, Integer nombreJoueursMax, Integer ageMinimum, Duration tempsDeJeuEnMinutes, byte[] image) {
         this.nom = nom;
         this.typeDeJeu = typeDeJeu;
         this.nombreJoueursMin = nombreJoueursMin;
@@ -76,11 +72,11 @@ public class JeuSociete {
         this.nom = nom;
     }
 
-    public TypeJeu getTypeDeJeu() {
+    public Set<TypeJeu> getTypeDeJeu() {
         return typeDeJeu;
     }
 
-    public void setTypeDeJeu(TypeJeu typeDeJeu) {
+    public void setTypeDeJeu(Set<TypeJeu> typeDeJeu) {
         this.typeDeJeu = typeDeJeu;
     }
 

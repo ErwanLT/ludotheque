@@ -14,6 +14,7 @@ import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Route(value = "dashboard", layout = MainLayout.class)
@@ -38,9 +39,10 @@ public class DashboardView extends VerticalLayout {
     private void loadChart() {
         List<JeuSociete> jeux = repository.findAll();
         Map<TypeJeu, Long> jeuxParType = jeux.stream()
-                .collect(Collectors.groupingBy(JeuSociete::getTypeDeJeu, Collectors.counting()));
+                .flatMap(jeu -> jeu.getTypeDeJeu().stream()) // Aplatir les types de jeux en une seule liste
+                .collect(Collectors.groupingBy(typeJeu -> typeJeu, Collectors.counting())); // Regrouper par type et compter
 
-        // Préparer les données pour Chart.js
+// Préparer les données pour Chart.js
         String labels = jeuxParType.keySet().stream()
                 .map(Enum::name)
                 .collect(Collectors.joining("','", "'", "'"));

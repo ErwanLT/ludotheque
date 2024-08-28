@@ -1,9 +1,11 @@
 package fr.eletutour.ludotheque.service;
 
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
+import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -37,5 +39,31 @@ public class GameService {
             return;
         }
         repository.save(jeuSociete);
+    }
+
+    public List<JeuSociete> findRandomGame(TypeJeu typeJeu, Integer nombreDeJoueurs, Duration tempsDeJeu) {
+        List<JeuSociete> jeux = findAllGames("");
+
+        return jeux.stream()
+                .filter(jeu -> {
+                    if(typeJeu == null){
+                        return true;
+                    }
+                    return jeu.getTypeDeJeu().contains(typeJeu);
+                })
+                .filter(jeu -> {
+                    if (nombreDeJoueurs == null){
+                        return true;
+                    }
+                    return jeu.getNombreJoueursMin() <= nombreDeJoueurs && jeu.getNombreJoueursMax() >= nombreDeJoueurs;
+                })
+                .filter(jeu -> {
+                    if(tempsDeJeu == null){
+                        return true;
+                    }
+                    return jeu.getTempsDeJeuEnMinutes().toMinutes() <= tempsDeJeu.toMinutes();
+                })
+                .toList();
+
     }
 }

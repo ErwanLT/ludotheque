@@ -5,6 +5,8 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.ListItem;
+import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -91,7 +93,12 @@ public class GamesListView extends VerticalLayout{
         grid.setSizeFull();
         grid.setColumns("id");
         grid.addColumn(JeuSociete::getNom).setHeader("Nom").setSortable(true);
-        grid.addColumn(JeuSociete::getTypeDeJeu).setHeader("Type").setSortable(true);
+        grid.addComponentColumn(jeu -> {
+            UnorderedList listType = new UnorderedList();
+            jeu.getTypeDeJeu()
+                    .forEach(t -> listType.add(new ListItem(t.name())));
+            return listType;
+        }).setHeader("Type");
         grid.addColumn(jeu -> "de " + jeu.getNombreJoueursMin() + " à " + jeu.getNombreJoueursMax() +" joueurs").setHeader("Nombre de joueurs");
         grid.addColumn(JeuSociete::getFormattedTempsDeJeu).setHeader("Temps de jeu");
         grid.addColumn(jeu -> "à partir de :" + jeu.getAgeMinimum() + "ans").setHeader("Age minimum");
