@@ -10,6 +10,7 @@ import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -20,20 +21,19 @@ import fr.eletutour.ludotheque.views.form.GameForm;
 
 import java.io.ByteArrayInputStream;
 
-@Route(value="", layout = MainLayout.class)
+@Route(value = "", layout = MainLayout.class)
 @PageTitle("Mes jeux")
-public class GamesListView extends VerticalLayout{
+public class GamesListView extends VerticalLayout {
 
     private final GameService service;
-    private final Grid<JeuSociete> grid = new Grid<>(JeuSociete.class);
+    private final TreeGrid<JeuSociete> treeGrid = new TreeGrid<>(JeuSociete.class);
     private final TextField filterText = new TextField();
     private GameForm gameForm;
-
 
     public GamesListView(GameService service) {
         this.service = service;
         setSizeFull();
-        configureGrid();
+        configureTreeGrid();
         configureForm();
         add(getToolbar(), getContent());
         updateList();
@@ -41,9 +41,8 @@ public class GamesListView extends VerticalLayout{
     }
 
     private void updateList() {
-        grid.setItems(service.findAllGames(filterText.getValue()));
-        grid.getColumns().getFirst()
-                .setFooter(String.format("%s jeux", service.countGames()));
+        treeGrid.setItems(service.findAllGames(filterText.getValue()), JeuSociete::getExtensions);
+        treeGrid.getColumns().getFirst().setFooter(String.format("%s jeux", service.countGames()));
     }
 
     private void configureForm() {
@@ -67,8 +66,8 @@ public class GamesListView extends VerticalLayout{
     }
 
     private HorizontalLayout getContent() {
-        HorizontalLayout content = new HorizontalLayout(grid, gameForm);
-        content.setFlexGrow(2, grid);
+        HorizontalLayout content = new HorizontalLayout(treeGrid, gameForm);
+        content.setFlexGrow(2, treeGrid);
         content.setFlexGrow(1, gameForm);
         content.setSizeFull();
         return content;
@@ -88,30 +87,29 @@ public class GamesListView extends VerticalLayout{
         return toolbar;
     }
 
-    private void configureGrid() {
+    private void configureTreeGrid() {
+        treeGrid.setSizeFull();
+        treeGrid.removeAllColumns();
+        treeGrid.setItems(service.findAllGames(filterText.getValue()), JeuSociete::getExtensions);
 
-        grid.setSizeFull();
-        grid.setColumns("id");
-        grid.addColumn(JeuSociete::getNom).setHeader("Nom").setSortable(true);
-        grid.addComponentColumn(jeu -> {
+        treeGrid.addHierarchyColumn(JeuSociete::getNom).setHeader("Nom").setSortable(true);
+        treeGrid.addComponentColumn(jeu -> {
             UnorderedList listType = new UnorderedList();
-            jeu.getTypeDeJeu()
-                    .forEach(t -> listType.add(new ListItem(t.name())));
+            jeu.getTypeDeJeu().forEach(t -> listType.add(new ListItem(t.name())));
             return listType;
         }).setHeader("Type");
-        grid.addColumn(jeu -> "de " + jeu.getNombreJoueursMin() + " à " + jeu.getNombreJoueursMax() +" joueurs").setHeader("Nombre de joueurs");
-        grid.addColumn(JeuSociete::getFormattedTempsDeJeu).setHeader("Temps de jeu");
-        grid.addColumn(jeu -> "à partir de :" + jeu.getAgeMinimum() + "ans").setHeader("Age minimum");
-        grid.addComponentColumn(jeu -> {
+        treeGrid.addColumn(jeu -> "de " + jeu.getNombreJoueursMin() + " à " + jeu.getNombreJoueursMax() + " joueurs").setHeader("Nombre de joueurs");
+        treeGrid.addColumn(JeuSociete::getFormattedTempsDeJeu).setHeader("Temps de jeu");
+        treeGrid.addColumn(jeu -> "à partir de :" + jeu.getAgeMinimum() + " ans").setHeader("Age minimum");
+        treeGrid.addComponentColumn(jeu -> {
             Image img = createImageFromBytes(jeu.getImage(), jeu.getNom());
             img.setHeight(150, Unit.PIXELS);
             img.setWidth(150, Unit.PIXELS);
             return img;
         });
 
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.asSingleSelect().addValueChangeListener(event ->
-                editGame(event.getValue()));
+        treeGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+        treeGrid.asSingleSelect().addValueChangeListener(event -> editGame(event.getValue()));
     }
 
     public static Image createImageFromBytes(byte[] imageBytes, String altText) {
@@ -135,7 +133,7 @@ public class GamesListView extends VerticalLayout{
     }
 
     private void addGame() {
-        grid.asSingleSelect().clear();
+        treeGrid.asSingleSelect().clear();
         editGame(new JeuSociete());
     }
 }

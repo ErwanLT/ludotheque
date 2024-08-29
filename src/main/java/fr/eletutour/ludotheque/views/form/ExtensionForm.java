@@ -6,9 +6,6 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -19,53 +16,44 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.shared.Registration;
-import elemental.json.Json;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
-import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 
 import java.io.IOException;
 import java.time.Duration;
 
-public class GameForm extends FormLayout {
+public class ExtensionForm extends FormLayout {
 
-    Binder<JeuSociete> binder = new BeanValidationBinder<>(JeuSociete.class);
+    private JeuSociete jeuPrincipal;
+    private JeuSociete extension;
 
-    TextField nom = new TextField("Nom du jeu");
-    MultiSelectComboBox<TypeJeu> typeJeu = new MultiSelectComboBox<>("Type de jeu");
-    NumberField minJoueur = new NumberField("Nombre de joueur minimum");
-    NumberField maxJoueur = new NumberField("Nombre de joueur maximum");
-    NumberField ageMinimum = new NumberField("Âge minimum requis");
-    NumberField tempsDeJeu = new NumberField("Temps de jeu (minutes)");
+    private Binder<JeuSociete> binder = new BeanValidationBinder<>(JeuSociete.class);
+
+    private TextField nom = new TextField("Nom de l'extension");
+    private NumberField minJoueur = new NumberField("Nombre de joueur minimum");
+    private NumberField maxJoueur = new NumberField("Nombre de joueur maximum");
+    private NumberField ageMinimum = new NumberField("Âge minimum requis");
+    private NumberField tempsDeJeu = new NumberField("Temps de jeu (minutes)");
     Upload imageUpload = new Upload(new MemoryBuffer());
 
-    Checkbox estExtension = new Checkbox("Est une extension");
-    Button ajouterExtensionButton = new Button("Ajouter une extension");
+    private Button save = new Button("Ajouter Extension");
+    private Button close = new Button("Annuler");
 
-    Button save = new Button("Sauvegarder");
-    Button delete = new Button("Supprimer");
-    Button close = new Button("Annuler");
+    public ExtensionForm(JeuSociete jeuPrincipal, JeuSociete extension) {
+        this.jeuPrincipal = jeuPrincipal;
+        this.extension = extension;
 
-    private JeuSociete jeuSociete;
-
-    public GameForm() {
-        // Configure ComboBox
-        typeJeu.setItems(TypeJeu.values());
-        typeJeu.setItemLabelGenerator(TypeJeu::name);
-
-        // Configure Image Upload
         MemoryBuffer buffer = new MemoryBuffer();
         imageUpload.setReceiver(buffer);
         imageUpload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
         imageUpload.addSucceededListener(event -> {
             try {
-                jeuSociete.setImage(buffer.getInputStream().readAllBytes());
+                extension.setImage(buffer.getInputStream().readAllBytes());
             } catch (IOException e) {
                 Notification.show("Erreur lors du téléchargement de l'image: " + e.getMessage(), 3000, Notification.Position.MIDDLE);
                 e.printStackTrace();
             }
         });
 
-        // Binder configuration with Converters for NumberFields
         binder.forField(minJoueur)
                 .withConverter(new DoubleToIntegerConverter())
                 .bind(JeuSociete::getNombreJoueursMin, JeuSociete::setNombreJoueursMin);
@@ -79,118 +67,67 @@ public class GameForm extends FormLayout {
                 .withConverter(new DoubleToLongConverter())
                 .bind(jeu -> jeu.getTempsDeJeuEnMinutes().toMinutes(),
                         (jeu, value) -> jeu.setTempsDeJeuEnMinutes(Duration.ofMinutes(value)));
-        binder.forField(typeJeu)
-                        .bind(JeuSociete::getTypeDeJeu, JeuSociete::setTypeDeJeu);
-
         binder.bindInstanceFields(this);
-
-        if(jeuSociete != null && jeuSociete.isEstExtension()){
-            estExtension.setEnabled(false);
-        }
-        estExtension.addValueChangeListener(event -> {
-            boolean isExtension = event.getValue();
-            ajouterExtensionButton.setVisible(!isExtension);
-        });
-
-        ajouterExtensionButton.addClickListener(event -> ouvrirPopupAjoutExtension());
 
         add(
                 nom,
-                typeJeu,
                 minJoueur,
                 maxJoueur,
                 ageMinimum,
                 tempsDeJeu,
                 imageUpload,
-                estExtension,
-                ajouterExtensionButton,
                 createButtonsLayout()
         );
-    }
 
-    private void ouvrirPopupAjoutExtension() {
-        JeuSociete nouvelleExtension = new JeuSociete();
-        nouvelleExtension.setEstExtension(true);
-        nouvelleExtension.setTypeDeJeu(jeuSociete.getTypeDeJeu());
-        nouvelleExtension.setJeuPrincipal(jeuSociete);
-
-        ExtensionForm extensionForm = new ExtensionForm(jeuSociete, nouvelleExtension);
-
-        Dialog dialog = new Dialog(extensionForm);
-        extensionForm.addListener(ExtensionForm.SaveEvent.class, event -> {
-            dialog.close();
-            Notification.show("Extension ajoutée avec succès !");
-        });
-
-        extensionForm.addListener(ExtensionForm.CloseEvent.class, event -> dialog.close());
-
-        dialog.open();
-    }
-
-    public void setJeuSociete(JeuSociete jeuSociete) {
-        this.jeuSociete = jeuSociete;
-        if (jeuSociete != null && jeuSociete.getImage() != null) {
-            // Assurez-vous que l'image existante est affichée correctement si nécessaire
-            imageUpload.getElement().setPropertyJson("files", Json.createArray());
-        }
-        binder.readBean(jeuSociete);
+        binder.readBean(extension);
     }
 
     private Component createButtonsLayout() {
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         save.addClickShortcut(Key.ENTER);
         close.addClickShortcut(Key.ESCAPE);
 
         save.addClickListener(event -> validateAndSave());
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, jeuSociete)));
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
 
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
-        return new HorizontalLayout(save, delete, close);
+        return new HorizontalLayout(save, close);
     }
 
     private void validateAndSave() {
         try {
-            binder.writeBean(jeuSociete);
-            fireEvent(new SaveEvent(this, jeuSociete));
+            binder.writeBean(extension);
+            jeuPrincipal.getExtensions().add(extension); // Ajout de l'extension à la liste des extensions du jeu principal
+            fireEvent(new SaveEvent(this, extension));
         } catch (ValidationException e) {
             Notification.show("Erreur de validation des données");
         }
     }
 
-    // Event classes
-    public static abstract class GameFormEvent extends ComponentEvent<GameForm> {
-        private JeuSociete jeuSociete;
+    public static abstract class ExtensionFormEvent extends ComponentEvent<ExtensionForm> {
+        private JeuSociete extension;
 
-        public GameFormEvent(GameForm source, JeuSociete jeuSociete) {
+        public ExtensionFormEvent(ExtensionForm source, JeuSociete extension) {
             super(source, false);
-            this.jeuSociete = jeuSociete;
+            this.extension = extension;
         }
 
-        public JeuSociete getJeuSociete() {
-            return jeuSociete;
-        }
-    }
-
-    public static class SaveEvent extends GameFormEvent {
-        SaveEvent(GameForm source, JeuSociete jeuSociete) {
-            super(source, jeuSociete);
+        public JeuSociete getExtension() {
+            return extension;
         }
     }
 
-    public static class DeleteEvent extends GameFormEvent {
-        DeleteEvent(GameForm source, JeuSociete jeuSociete) {
-            super(source, jeuSociete);
+    public static class SaveEvent extends ExtensionFormEvent {
+        SaveEvent(ExtensionForm source, JeuSociete extension) {
+            super(source, extension);
         }
     }
 
-    public static class CloseEvent extends GameFormEvent {
-        CloseEvent(GameForm source) {
+    public static class CloseEvent extends ExtensionFormEvent {
+        CloseEvent(ExtensionForm source) {
             super(source, null);
-            source.imageUpload.getElement().setPropertyJson("files", Json.createArray());
         }
     }
 

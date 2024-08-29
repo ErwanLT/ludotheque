@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -38,10 +39,20 @@ public class JeuSociete {
     @Lob
     private byte[] image;
 
+    private boolean estExtension;
+
+    @ManyToOne
+    @JoinColumn(name = "jeu_principal_id")
+    private JeuSociete jeuPrincipal;
+
+    @OneToMany(mappedBy = "jeuPrincipal", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<JeuSociete> extensions = new HashSet<>();
+
     // Constructeurs, getters et setters
 
     public JeuSociete() {
         this.tempsDeJeuEnMinutes = Duration.ofMinutes(0);
+        this.setEstExtension(false);
     }
 
     public JeuSociete(String nom, Set<TypeJeu> typeDeJeu, Integer nombreJoueursMin, Integer nombreJoueursMax, Integer ageMinimum, Duration tempsDeJeuEnMinutes, byte[] image) {
@@ -128,5 +139,29 @@ public class JeuSociete {
 
     public void setImage(byte[] image) {
         this.image = image;
+    }
+
+    public Set<JeuSociete> getExtensions() {
+        return extensions;
+    }
+
+    public void setExtensions(Set<JeuSociete> extensions) {
+        this.extensions = extensions;
+    }
+
+    public JeuSociete getJeuPrincipal() {
+        return jeuPrincipal;
+    }
+
+    public void setJeuPrincipal(JeuSociete jeuPrincipal) {
+        this.jeuPrincipal = jeuPrincipal;
+    }
+
+    public boolean isEstExtension() {
+        return estExtension;
+    }
+
+    public void setEstExtension(boolean estExtension) {
+        this.estExtension = estExtension;
     }
 }

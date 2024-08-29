@@ -19,9 +19,9 @@ public class GameService {
 
     public List<JeuSociete> findAllGames(String stringFilter){
         if (stringFilter == null || stringFilter.isEmpty()) {
-            return repository.findAll();
+            return repository.findAll().stream().filter(j -> !j.isEstExtension()).toList();
         } else {
-            return repository.findByNomContainingIgnoreCase(stringFilter);
+            return repository.findByNomContainingIgnoreCase(stringFilter).stream().filter(j -> !j.isEstExtension()).toList();
         }
     }
 
