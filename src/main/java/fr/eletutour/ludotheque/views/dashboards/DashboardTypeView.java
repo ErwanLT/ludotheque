@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Route(value = "dashboard", layout = MainLayout.class)
-@PageTitle("Dashboard")
+@Route(value = "type", layout = MainLayout.class)
+@PageTitle("Jeux par type")
 @JsModule("https://cdn.jsdelivr.net/npm/chart.js")
-public class DashboardTypeView extends VerticalLayout {
+public class DashboardTypeView extends DashboardBaseView {
 
     private final JeuSocieteRepository repository;
 
