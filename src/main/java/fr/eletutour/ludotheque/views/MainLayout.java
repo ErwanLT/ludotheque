@@ -8,11 +8,11 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.sidenav.SideNav;
+import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.dom.ThemeList;
-import com.vaadin.flow.router.HighlightConditions;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.theme.lumo.Lumo;
+import fr.eletutour.ludotheque.views.dashboards.DashboardTypeView;
 
 
 public class MainLayout extends AppLayout {
@@ -62,15 +62,27 @@ public class MainLayout extends AppLayout {
     }
 
     private void createDrawer() {
-        RouterLink listLink = new RouterLink("Liste de jeux", GamesListView.class);
-        RouterLink dashboardLink = new RouterLink("Dashboard", DashboardView.class);
-        RouterLink randomGameLink = new RouterLink("Jeu Aléatoire", RandomGameSearchView.class);
-        listLink.setHighlightCondition(HighlightConditions.sameLocation());
+        SideNav sideNav = new SideNav();
 
-        addToDrawer(new VerticalLayout(
-                listLink,
-                dashboardLink,
-                randomGameLink
-        ));
+        // Item pour la liste des jeux
+        SideNavItem listNavItem = new SideNavItem("Liste de jeux", GamesListView.class, VaadinIcon.LIST.create());
+
+        // Item principal pour le Dashboard
+        SideNavItem dashboardNavItem = new SideNavItem("Dashboard");
+        dashboardNavItem.setPrefixComponent(VaadinIcon.DASHBOARD.create());
+
+        // Sous-items du Dashboard
+        SideNavItem overviewNavItem = new SideNavItem("Jeux par type", DashboardTypeView.class, VaadinIcon.LINE_CHART.create());
+
+        // Ajoute les sous-items au Dashboard
+        dashboardNavItem.addItem(overviewNavItem);
+
+        // Ajouter les items au SideNav
+        sideNav.addItem(listNavItem);
+        sideNav.addItem(dashboardNavItem);  // Dashboard avec ses sous-items
+        sideNav.addItem(new SideNavItem("Jeu Aléatoire", RandomGameSearchView.class, VaadinIcon.RANDOM.create()));
+
+        // Ajoute le SideNav au Drawer
+        addToDrawer(sideNav);
     }
 }

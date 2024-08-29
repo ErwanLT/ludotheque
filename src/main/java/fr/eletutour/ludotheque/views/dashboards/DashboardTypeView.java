@@ -1,4 +1,4 @@
-package fr.eletutour.ludotheque.views;
+package fr.eletutour.ludotheque.views.dashboards;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -9,6 +9,7 @@ import com.vaadin.flow.router.Route;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
+import fr.eletutour.ludotheque.views.MainLayout;
 
 import java.util.List;
 import java.util.Map;
@@ -17,11 +18,11 @@ import java.util.stream.Collectors;
 @Route(value = "dashboard", layout = MainLayout.class)
 @PageTitle("Dashboard")
 @JsModule("https://cdn.jsdelivr.net/npm/chart.js")
-public class DashboardView extends VerticalLayout {
+public class DashboardTypeView extends VerticalLayout {
 
     private final JeuSocieteRepository repository;
 
-    public DashboardView(JeuSocieteRepository repository) {
+    public DashboardTypeView(JeuSocieteRepository repository) {
         this.repository = repository;
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setSizeFull();
@@ -39,7 +40,6 @@ public class DashboardView extends VerticalLayout {
                 .flatMap(jeu -> jeu.getTypeDeJeu().stream()) // Aplatir les types de jeux en une seule liste
                 .collect(Collectors.groupingBy(typeJeu -> typeJeu, Collectors.counting())); // Regrouper par type et compter
 
-// Préparer les données pour Chart.js
         String labels = jeuxParType.keySet().stream()
                 .map(Enum::name)
                 .collect(Collectors.joining("','", "'", "'"));
@@ -68,7 +68,7 @@ public class DashboardView extends VerticalLayout {
                             },
                             title: {
                                 display: true,
-                                text: 'Répartition jeu par type'
+                                text: 'Répartition jeux par type'
                             }
                         }
                     }
