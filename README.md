@@ -69,4 +69,4 @@ Les contributions sont les bienvenues ! Pour commencer :
 * Ouvrez une Pull Request.
 
 ## Licence
-Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
+Ce projet est sous licence Apache-2.0 license. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
