@@ -65,6 +65,18 @@ public class JeuSociete {
         this.image = image;
     }
 
+    public JeuSociete(String nom, Set<TypeJeu> typeDeJeu, Integer nombreJoueursMin, Integer nombreJoueursMax, Integer ageMinimum, Duration tempsDeJeuEnMinutes, byte[] image, boolean estExtension, Set<JeuSociete> extensions) {
+        this.nom = nom;
+        this.typeDeJeu = typeDeJeu;
+        this.nombreJoueursMin = nombreJoueursMin;
+        this.nombreJoueursMax = nombreJoueursMax;
+        this.ageMinimum = ageMinimum;
+        this.tempsDeJeuEnMinutes = tempsDeJeuEnMinutes;
+        this.image = image;
+        this.estExtension = estExtension;
+        this.extensions = extensions;
+    }
+
     // Getters et setters
 
     public Long getId() {

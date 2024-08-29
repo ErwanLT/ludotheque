@@ -1,17 +1,16 @@
 package fr.eletutour.ludotheque.views.form;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
@@ -40,6 +39,7 @@ public class GameForm extends FormLayout {
 
     Checkbox estExtension = new Checkbox("Est une extension");
     Button ajouterExtensionButton = new Button("Ajouter une extension");
+    VerticalLayout extensionsLayout = new VerticalLayout();
 
     Button save = new Button("Sauvegarder");
     Button delete = new Button("Supprimer");
@@ -104,6 +104,7 @@ public class GameForm extends FormLayout {
                 imageUpload,
                 estExtension,
                 ajouterExtensionButton,
+                extensionsLayout,
                 createButtonsLayout()
         );
     }
@@ -118,6 +119,12 @@ public class GameForm extends FormLayout {
 
         Dialog dialog = new Dialog(extensionForm);
         extensionForm.addListener(ExtensionForm.SaveEvent.class, event -> {
+            // Ajouter l'extension au jeu principal
+            jeuSociete.getExtensions().add(event.getExtension());
+
+            // Mettre à jour la liste des extensions dans le GameForm
+            updateExtensionsLayout(jeuSociete);
+
             dialog.close();
             Notification.show("Extension ajoutée avec succès !");
         });
@@ -134,6 +141,7 @@ public class GameForm extends FormLayout {
             imageUpload.getElement().setPropertyJson("files", Json.createArray());
         }
         binder.readBean(jeuSociete);
+        updateExtensionsLayout(jeuSociete);
     }
 
     private Component createButtonsLayout() {
@@ -159,6 +167,39 @@ public class GameForm extends FormLayout {
         } catch (ValidationException e) {
             Notification.show("Erreur de validation des données");
         }
+    }
+
+    private void updateExtensionsLayout(JeuSociete jeuSociete) {
+        extensionsLayout.removeAll(); // Nettoyer l'affichage précédent
+
+        if (jeuSociete != null && jeuSociete.getExtensions() != null && !jeuSociete.getExtensions().isEmpty()) {
+            jeuSociete.getExtensions().forEach(extension -> {
+                Div extensionItem = createExtensionItem(extension);
+                extensionsLayout.add(extensionItem);
+            });
+            extensionsLayout.setVisible(true);
+        } else {
+            extensionsLayout.setVisible(false);
+        }
+    }
+
+    private Div createExtensionItem(JeuSociete extension) {
+        Div itemLayout = new Div();
+        itemLayout.addClassName("extension-item");
+
+        // Nom de l'extension
+        Div name = new Div();
+        name.setText(extension.getNom());
+
+        // Bouton supprimer
+        Button deleteButton = new Button("Supprimer");
+        deleteButton.addClickListener(event -> {
+            jeuSociete.getExtensions().remove(extension);
+            updateExtensionsLayout(jeuSociete);
+        });
+
+        itemLayout.add(name, deleteButton);
+        return itemLayout;
     }
 
     // Event classes
