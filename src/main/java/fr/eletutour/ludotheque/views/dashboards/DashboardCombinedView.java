@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Route(value = "type", layout = MainLayout.class)
-@PageTitle("Jeux par type")
+@Route(value = "combined", layout = MainLayout.class)
+@PageTitle("Jeux par type et extensions")
 @JsModule("https://cdn.jsdelivr.net/npm/chart.js")
-public class DashboardTypeView extends DashboardBaseView {
+public class DashboardCombinedView extends DashboardBaseView {
 
     private final JeuSocieteRepository repository;
 
-    public DashboardTypeView(JeuSocieteRepository repository) {
+    public DashboardCombinedView(JeuSocieteRepository repository) {
         this.repository = repository;
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setSizeFull();
@@ -35,44 +35,75 @@ public class DashboardTypeView extends DashboardBaseView {
 
     private void loadChart() {
         List<JeuSociete> jeux = repository.findAll();
+
+        // Dataset 1: Jeux par type
         Map<TypeJeu, Long> jeuxParType = jeux.stream()
+                .flatMap(jeu -> jeu.getTypeDeJeu().stream()) // Aplatir les types de jeux en une seule liste
+                .collect(Collectors.groupingBy(typeJeu -> typeJeu, Collectors.counting())); // Regrouper par type et compter
+
+        // Dataset 2: Extensions par type
+        Map<TypeJeu, Long> extensionsParType = jeux.stream()
+                .filter(JeuSociete::isEstExtension) // Filtrer les extensions
                 .flatMap(jeu -> jeu.getTypeDeJeu().stream()) // Aplatir les types de jeux en une seule liste
                 .collect(Collectors.groupingBy(typeJeu -> typeJeu, Collectors.counting())); // Regrouper par type et compter
 
         String labels = jeuxParType.keySet().stream()
                 .map(Enum::name)
                 .collect(Collectors.joining("','", "'", "'"));
-        String data = jeuxParType.values().stream()
+        String dataJeux = jeuxParType.values().stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        String dataExtensions = jeuxParType.keySet().stream()
+                .map(type -> extensionsParType.getOrDefault(type, 0L))
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
 
         String js = """
-                console.log("Création du graphique en cours !");
+                console.log("Création du graphique combiné en cours !");
                 const ctx = document.getElementById('chartCanvas').getContext('2d');
                 new Chart(ctx, {
-                    type: 'polarArea',
+                    type: 'line',
                     data: {
                         labels:[%s],
-                        datasets: [{
-                            data: [%s],
-                             backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22']
-                        }]
+                        datasets: [
+                            {
+                               label: 'Jeux par type',
+                               data: [%s],
+                               borderColor: "#d40f39",
+                               backgroundColor: "#d40f5e",
+                               stack: 'combined',
+                               type: 'bar'
+                             },
+                            {
+                               label: 'Nombre extension',
+                               data: [%s],
+                               borderColor: "#0f22d4",
+                               backgroundColor: "#0f7bd4",
+                               stack: 'combined'
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
                         plugins: {
                             legend: {
                                 position: 'top',
                             },
                             title: {
                                 display: true,
-                                text: 'Répartition jeux par type'
+                                text: 'Nombre de jeux par type et nombre d\\'extensions'
                             }
                         }
                     }
                 });
-                """.formatted(labels, data);
+                """.formatted(labels, dataJeux, dataExtensions);
+
         UI.getCurrent().getPage().executeJs(js);
     }
 }

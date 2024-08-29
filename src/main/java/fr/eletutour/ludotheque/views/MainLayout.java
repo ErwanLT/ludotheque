@@ -12,6 +12,7 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.theme.lumo.Lumo;
+import fr.eletutour.ludotheque.views.dashboards.DashboardCombinedView;
 import fr.eletutour.ludotheque.views.dashboards.DashboardTypeView;
 
 
@@ -66,8 +67,10 @@ public class MainLayout extends AppLayout {
         SideNavItem dashboardNavItem = new SideNavItem("Dashboard");
         dashboardNavItem.setPrefixComponent(VaadinIcon.DASHBOARD.create());
 
-        SideNavItem overviewNavItem = new SideNavItem("Jeux par type", DashboardTypeView.class, VaadinIcon.LINE_CHART.create());
+        SideNavItem overviewNavItem = new SideNavItem("Jeux par type", DashboardTypeView.class, VaadinIcon.PIE_CHART.create());
         dashboardNavItem.addItem(overviewNavItem);
+        SideNavItem combinedNavItem = new SideNavItem("Type / extension", DashboardCombinedView.class, VaadinIcon.LINE_BAR_CHART.create());
+        dashboardNavItem.addItem(combinedNavItem);
 
         sideNav.addItem(listNavItem);
         sideNav.addItem(dashboardNavItem);  // Dashboard avec ses sous-items
