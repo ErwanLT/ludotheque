@@ -1,97 +1,72 @@
-# Gestion de Ludothèque - Application Web
-
-Cette application est conçue pour la gestion d'une ludothèque, permettant de gérer une collection de jeux de société. Elle permet de visualiser, ajouter, modifier et supprimer des jeux, ainsi que de voir la répartition des jeux en fonction de leur type.
+# Ludothèque - Gestion des Jeux de Société
+Ce projet est une application de gestion de jeux de société permettant de répertorier, visualiser et gérer des jeux, y compris leurs extensions. L'application est construite avec Spring Boot et Vaadin pour une interface utilisateur fluide.
 
 ## Fonctionnalités
+* **Liste des jeux de société** : Visualisez tous les jeux de société disponibles dans la base de données, avec des filtres pour une recherche facile.
+* **Ajout, modification et suppression de jeux** : Gérez les jeux de société directement depuis l'interface.
+* **Gestion des types de jeux** : Chaque jeu peut être catégorisé selon plusieurs types.
+* **Gestion des extensions** : Les jeux peuvent avoir des extensions, qui sont des ajouts spécifiques à un jeu principal.
+* **Affichage en arborescence** : Les jeux et leurs extensions sont affichés sous forme d'une hiérarchie pour une meilleure visualisation.
+* **Téléchargement d'images** : Associez des images aux jeux pour les rendre plus reconnaissables dans l'interface.
 
-- **Visualisation des jeux** : Affichage des jeux de société disponibles dans la ludothèque avec leurs détails.
-- **Ajout de jeux** : Possibilité d'ajouter de nouveaux jeux dans la ludothèque via un formulaire.
-- **Modification de jeux** : Modification des informations existantes sur un jeu.
-- **Suppression de jeux** : Suppression d'un jeu de la ludothèque.
-- **Dashboard** : Visualisation de la répartition des jeux par type sous forme de graphique circulaire.
+## Prérequis
+Avant de pouvoir exécuter ce projet, assurez-vous d'avoir les éléments suivants installés :
 
-## Technologies Utilisées
+* Java 17 ou plus récent
+* Maven 3.6 ou plus récent
+* Un serveur de base de données compatible (MySQL, PostgreSQL, etc.)
 
-- **Java 17**
-- **Spring Boot 3.x**
-- **Vaadin 24.x**
-- **H2 Database** : Base de données en mémoire pour le développement et les tests.
-- **Maven** : Gestionnaire de dépendances et de construction du projet.
-- **Chart.js** : Bibliothèque JavaScript pour la création de graphiques.
+## Installation
+1. Clonez ce dépôt sur votre machine locale :
+```bash
+git clone https://github.com/votre-utilisateur/ludotheque.git
+cd ludotheque
+```
+2. Configurez la base de données dans le fichier application.properties situé dans le répertoire src/main/resources/. Voici un exemple de configuration pour MySQL :
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/ludotheque
+spring.datasource.username=root
+spring.datasource.password=motdepasse
+spring.jpa.hibernate.ddl-auto=update
+```
+3. Compilez le projet et démarrez l'application :
+```bash
+mvn clean install
+mvn spring-boot:run
+```
+4. Accédez à l'application via votre navigateur à l'adresse suivante :
+```arduino
+http://localhost:8080
+```
 
-## Installation et Démarrage
+## Utilisation
+### Liste des Jeux
+La page principale affiche une liste de tous les jeux de société. Vous pouvez filtrer cette liste en utilisant le champ de recherche en haut de la page.
 
-1. **Cloner le projet :**
+### Ajouter/Modifier un Jeu
+Pour ajouter un nouveau jeu, cliquez sur le bouton "**Ajouter jeu**". Pour modifier un jeu existant, cliquez sur une ligne de la liste. Un formulaire s'affiche alors, vous permettant de remplir ou de modifier les informations suivantes :
 
-    ```bash
-    git clone https://github.com/votre-repo/ludotheque.git
-    cd ludotheque
-    ```
+* Nom du jeu
+* Types de jeu (vous pouvez en sélectionner plusieurs)
+* Nombre minimum et maximum de joueurs
+* Âge minimum requis
+* Temps de jeu moyen
+* Image du jeu
 
-2. **Compiler et exécuter l'application :**
+### Gestion des Extensions
+Si un jeu n'est pas une extension, un bouton "**Ajouter une extension**" apparaît dans le formulaire. En cliquant dessus, vous pouvez ajouter une nouvelle extension associée au jeu sélectionné. Les extensions existantes sont affichées sous forme de liste avec la possibilité de les supprimer.
 
-   Vous pouvez exécuter l'application directement depuis votre IDE (comme IntelliJ IDEA ou Eclipse) ou utiliser Maven.
+### Suppression d'un Jeu
+Vous pouvez supprimer un jeu ou une extension en cliquant sur le bouton "**Supprimer**" dans le formulaire d'édition.
 
-    ```bash
-    mvn clean install
-    mvn spring-boot:run
-    ```
+## Contribution
+Les contributions sont les bienvenues ! Pour commencer :
 
-3. **Accéder à l'application :**
+* Fork le projet.
+* Crée une branche pour votre fonctionnalité (git checkout -b feature/AmazingFeature).
+* Commitez vos modifications (git commit -m 'Add some AmazingFeature').
+* Poussez sur la branche (git push origin feature/AmazingFeature).
+* Ouvrez une Pull Request.
 
-   L'application sera disponible à l'adresse suivante :
-    ```
-    http://localhost:8080/
-    ```
-
-## Structure du Projet
-
-- **`src/main/java/`** : Contient le code source de l'application.
-    - **`fr.eletutour.ludotheque/`** : Package principal contenant les classes du projet.
-        - **`LudothequeApplication`** : Classe principale démarrant l'application Spring Boot.
-        - **`dao/`**
-          - **`bean/`**
-            - **`JeuSociete.java`** : Entité représentant un jeu de société.
-            - **`TypeJeu.java`** : Enumération définissant les types de jeux.
-          - **`repository/JeuSocieteRepository.java`** : Interface pour les opérations CRUD sur les jeux.
-        - **`service/GamesService.java`** : Service d'accès à la BDD.
-        - **`view/`** : Contient les vues Vaadin pour l'interface utilisateur.
-            - **`MainLayout.java`** : Vue principale.
-            - **`form/`**
-              - **`GameForm.java`** : Formulaire pour ajouter/modifier un jeu.
-            - **`GameListView.java`** : Vue affichant la liste des jeux.
-            - **`DashboardView.java`** : Vue affichant la répartition des jeux par type.
-
-- **`src/main/resources/`** : Contient les ressources statiques et les fichiers de configuration.
-    - **`application.properties`** : Fichier de configuration de Spring Boot.
-    - **`schema.sql`** : Script SQL pour l'initialisation de la base de données.
-
-- **`pom.xml`** : Fichier de configuration Maven contenant les dépendances du projet.
-
-## Gestion des Données
-
-- **Base de données :** H2 Database est utilisé pour stocker les données en mémoire. Les données sont initialisées au démarrage à partir du fichier `data.sql`.
-
-## Utilisation de l'application
-
-### Ajout/Modification d'un Jeu
-
-- Remplissez le formulaire avec les informations du jeu.
-- **Image** : Vous pouvez téléverser une image pour représenter le jeu.
-- Cliquez sur **Sauvegarder** pour enregistrer les modifications.
-
-### Visualisation du Dashboard
-
-- Accédez à la vue Dashboard pour voir la répartition des jeux en fonction de leur type sous forme de graphique circulaire.
-
-## Déploiement
-
-Pour déployer l'application sur un serveur, assurez-vous de configurer une base de données persistante (par exemple MySQL, PostgreSQL) et de mettre à jour le fichier `application.properties` en conséquence.
-
-## Contribuer
-
-Les contributions sont les bienvenues ! Veuillez créer une branche pour votre fonctionnalité ou correction de bug, puis soumettez une pull request.
-
-## License
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+## Licence
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
