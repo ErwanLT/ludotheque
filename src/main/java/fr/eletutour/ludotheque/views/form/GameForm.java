@@ -84,9 +84,6 @@ public class GameForm extends FormLayout {
 
         binder.bindInstanceFields(this);
 
-        if(jeuSociete != null && jeuSociete.isEstExtension()){
-            estExtension.setEnabled(false);
-        }
         estExtension.addValueChangeListener(event -> {
             boolean isExtension = event.getValue();
             ajouterExtensionButton.setVisible(!isExtension);

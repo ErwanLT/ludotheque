@@ -9,7 +9,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
-import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
 import fr.eletutour.ludotheque.service.GameService;
 
 import java.time.Duration;

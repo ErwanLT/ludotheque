@@ -3,8 +3,6 @@ package fr.eletutour.ludotheque.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -14,7 +12,6 @@ import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Route(value = "dashboard", layout = MainLayout.class)
@@ -54,7 +51,7 @@ public class DashboardView extends VerticalLayout {
                 console.log("Création du graphique en cours !");
                 const ctx = document.getElementById('chartCanvas').getContext('2d');
                 new Chart(ctx, {
-                    type: 'pie',
+                    type: 'polarArea',
                     data: {
                         labels:[%s],
                         datasets: [{
@@ -64,7 +61,16 @@ public class DashboardView extends VerticalLayout {
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Répartition jeu par type'
+                            }
+                        }
                     }
                 });
                 """.formatted(labels, data);
