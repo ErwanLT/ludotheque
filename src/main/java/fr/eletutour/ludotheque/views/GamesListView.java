@@ -5,6 +5,7 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.ListItem;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -92,6 +93,7 @@ public class GamesListView extends VerticalLayout {
         treeGrid.setItems(service.findAllGames(filterText.getValue()), JeuSociete::getExtensions);
 
         treeGrid.addHierarchyColumn(JeuSociete::getNom).setHeader("Nom").setSortable(true);
+        treeGrid.addComponentColumn(jeu -> new Span(jeu.getRating()!=null?jeu.getRating() + "/ 10": "0 / 10")).setHeader("Note");
         treeGrid.addComponentColumn(jeu -> {
             UnorderedList listType = new UnorderedList();
             jeu.getTypeDeJeu().forEach(t -> listType.add(new ListItem(t.name())));

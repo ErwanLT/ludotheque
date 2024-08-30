@@ -48,6 +48,9 @@ public class JeuSociete {
     @OneToMany(mappedBy = "jeuPrincipal", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<JeuSociete> extensions = new HashSet<>();
 
+    @Column(nullable = true)
+    private Double rating;
+
     // Constructeurs, getters et setters
 
     public JeuSociete() {
@@ -175,5 +178,13 @@ public class JeuSociete {
 
     public void setEstExtension(boolean estExtension) {
         this.estExtension = estExtension;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 }
