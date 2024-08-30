@@ -71,26 +71,18 @@ public class DashboardCombinedView extends DashboardBaseView {
                                data: [%s],
                                borderColor: "#d40f39",
                                backgroundColor: "#d40f5e",
-                               stack: 'combined',
-                               type: 'bar'
                              },
                             {
                                label: 'Nombre extension',
                                data: [%s],
                                borderColor: "#0f22d4",
-                               backgroundColor: "#0f7bd4",
-                               stack: 'combined'
+                               backgroundColor: "#0f7bd4"
                             }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
                         plugins: {
                             legend: {
                                 position: 'top',

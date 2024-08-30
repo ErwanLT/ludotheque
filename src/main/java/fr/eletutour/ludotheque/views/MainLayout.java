@@ -69,7 +69,7 @@ public class MainLayout extends AppLayout {
 
         SideNavItem overviewNavItem = new SideNavItem("Jeux par type", DashboardTypeView.class, VaadinIcon.PIE_CHART.create());
         dashboardNavItem.addItem(overviewNavItem);
-        SideNavItem combinedNavItem = new SideNavItem("Type / extension", DashboardCombinedView.class, VaadinIcon.LINE_BAR_CHART.create());
+        SideNavItem combinedNavItem = new SideNavItem("Type / extension", DashboardCombinedView.class, VaadinIcon.LINE_CHART.create());
         dashboardNavItem.addItem(combinedNavItem);
 
         sideNav.addItem(listNavItem);
