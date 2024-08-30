@@ -19,6 +19,7 @@ import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.shared.Registration;
 import elemental.json.Json;
+import fr.eletutour.ludotheque.component.StarRating;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 
@@ -30,6 +31,7 @@ public class GameForm extends FormLayout {
     Binder<JeuSociete> binder = new BeanValidationBinder<>(JeuSociete.class);
 
     TextField nom = new TextField("Nom du jeu");
+    StarRating starRating = new StarRating();
     MultiSelectComboBox<TypeJeu> typeJeu = new MultiSelectComboBox<>("Type de jeu");
     NumberField minJoueur = new NumberField("Nombre de joueur minimum");
     NumberField maxJoueur = new NumberField("Nombre de joueur maximum");
@@ -81,6 +83,8 @@ public class GameForm extends FormLayout {
                         (jeu, value) -> jeu.setTempsDeJeuEnMinutes(Duration.ofMinutes(value)));
         binder.forField(typeJeu)
                         .bind(JeuSociete::getTypeDeJeu, JeuSociete::setTypeDeJeu);
+        binder.forField(starRating)
+                .bind(JeuSociete::getRating, JeuSociete::setRating);
 
         binder.bindInstanceFields(this);
 
@@ -93,6 +97,7 @@ public class GameForm extends FormLayout {
 
         add(
                 nom,
+                starRating.getStarLayout(),
                 typeJeu,
                 minJoueur,
                 maxJoueur,
