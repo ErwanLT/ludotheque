@@ -35,9 +35,17 @@ public class GameService {
 
     public void saveGame(JeuSociete jeuSociete) {
         if (jeuSociete == null) {
-            System.err.println("Contact is null. Are you sure you have connected your form to the application?");
+            System.err.println("Game is null. Are you sure you have connected your form to the application?");
             return;
         }
+        jeuSociete.getExtensions()
+                .forEach(
+                    ex -> {
+                        if(ex.getRating() == null) {
+                            ex.setRating(ex.getJeuPrincipal().getRating());
+                        }
+                    }
+        );
         repository.save(jeuSociete);
     }
 
