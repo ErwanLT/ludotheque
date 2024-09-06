@@ -30,6 +30,11 @@ public class GameService {
     }
 
     public void deleteGame(JeuSociete jeuSociete) {
+        if (jeuSociete.isEstExtension() && jeuSociete.getJeuPrincipal() != null) {
+            JeuSociete jeuPrincipal = jeuSociete.getJeuPrincipal();
+            jeuPrincipal.getExtensions().remove(jeuSociete);
+            repository.save(jeuPrincipal);
+        }
         repository.delete(jeuSociete);
     }
 

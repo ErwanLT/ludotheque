@@ -2,11 +2,13 @@ package fr.eletutour.ludotheque.views;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
+import fr.eletutour.ludotheque.component.GameDetails;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 import fr.eletutour.ludotheque.service.GameService;
@@ -26,7 +28,8 @@ public class RandomGameSearchView extends VerticalLayout {
     private NumberField nombreDeJoueurs = new NumberField("Nombre de joueurs");
     private NumberField tempsDeJeu = new NumberField("Temps de jeu maximum (minutes)");
     private Button searchButton = new Button("Chercher un jeu aléatoire");
-    private Div result = new Div();
+    private HorizontalLayout searchCritere = new HorizontalLayout();
+    private VerticalLayout result = new VerticalLayout();
 
     public RandomGameSearchView(GameService gameService) {
         this.gameService = gameService;
@@ -46,7 +49,8 @@ public class RandomGameSearchView extends VerticalLayout {
             displayResult(jeuAleatoire);
         });
 
-        add(typeJeu, nombreDeJoueurs, tempsDeJeu, searchButton, result);
+        searchCritere.add(typeJeu, nombreDeJoueurs, tempsDeJeu);
+        add(searchCritere, searchButton, result);
     }
 
     private Optional<JeuSociete> findRandomGame(TypeJeu typeJeu, Integer nombreDeJoueurs, Duration tempsDeJeu) {
@@ -61,13 +65,13 @@ public class RandomGameSearchView extends VerticalLayout {
 
     private void displayResult(Optional<JeuSociete> jeuAleatoire) {
         if (jeuAleatoire.isPresent()) {
+            result.removeAll();
             JeuSociete jeu = jeuAleatoire.get();
-            result.setText("Jeu sélectionné : " + jeu.getNom() +
-                " (Type : " + jeu.getTypeDeJeu() +
-                ", Joueurs : " + jeu.getNombreJoueursMin() + "-" + jeu.getNombreJoueursMax() +
-                ", Durée : " + jeu.getTempsDeJeuEnMinutes().toMinutes() + " minutes)");
+            result.add(new GameDetails(jeu));
+
         } else {
-            result.setText("Aucun jeu ne correspond à vos critères.");
+            result.removeAll();
+            result.add(new Span("Aucun jeu ne correspond à vos critères."));
         }
     }
 }

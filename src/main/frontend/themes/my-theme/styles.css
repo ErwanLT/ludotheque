@@ -6,3 +6,59 @@ a[highlight] {
 canvas {
     border: 1px solid #ccc;
 }
+
+.gameName {
+    background-color: #4287f5;
+    text-align: center;
+    font-weight: bold;
+    font-size: 40px;
+}
+
+.rating {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.gameImage {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.featureTitle {
+    text-align: center;
+    text-decoration: underline;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.features {
+    font-size: 30px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-title {
+    background-color: #4287f5;
+    font-weight: bold;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    height: auto;
+}
+
+.card-body {
+    padding: 10px;
+}
