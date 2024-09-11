@@ -1,41 +1,64 @@
 package fr.eletutour.ludotheque.service;
 
+import com.vaadin.flow.spring.security.AuthenticationContext;
+import fr.eletutour.ludotheque.dao.bean.AppUser;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
+import fr.eletutour.ludotheque.dao.repository.UserRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GameService {
 
-    private final JeuSocieteRepository repository;
+    private final JeuSocieteRepository jeuSocieteRepository;
+    private final UserRepository userRepository;
+    private final AuthenticationContext authenticationContext;
 
-    public GameService(JeuSocieteRepository repository) {
-        this.repository = repository;
+    public GameService(JeuSocieteRepository jeuSocieteRepository, UserRepository userRepository, AuthenticationContext authenticationContext) {
+        this.jeuSocieteRepository = jeuSocieteRepository;
+        this.userRepository = userRepository;
+        this.authenticationContext = authenticationContext;
     }
 
-    public List<JeuSociete> findAllGames(String stringFilter){
-        if (stringFilter == null || stringFilter.isEmpty()) {
-            return repository.findAll().stream().filter(j -> !j.isEstExtension()).toList();
-        } else {
-            return repository.findByNomContainingIgnoreCase(stringFilter).stream().filter(j -> !j.isEstExtension()).toList();
+    public List<JeuSociete> findAllGames(String stringFilter) {
+        String currentUsername = authenticationContext.getPrincipalName().get(); // Récupère le nom d'utilisateur
+
+        Optional<AppUser> currentUser = userRepository.findByUsername(currentUsername); // Cherche l'utilisateur dans la base
+
+        if (currentUser.isPresent()) {
+            if (stringFilter == null || stringFilter.isEmpty()) {
+                return jeuSocieteRepository.findAllByOwner(currentUser.get()).stream()
+                        .filter(j -> !j.isEstExtension())
+                        .toList();
+            } else {
+                return jeuSocieteRepository.findByNomContainingIgnoreCaseAndOwner(stringFilter, currentUser.get()).stream()
+                        .filter(j -> !j.isEstExtension())
+                        .toList();
+            }
         }
+
+        // Gérer le cas où l'utilisateur n'est pas trouvé
+        return Collections.emptyList();
     }
 
     public long countGames() {
-        return repository.count();
+        return jeuSocieteRepository.count();
     }
 
     public void deleteGame(JeuSociete jeuSociete) {
         if (jeuSociete.isEstExtension() && jeuSociete.getJeuPrincipal() != null) {
             JeuSociete jeuPrincipal = jeuSociete.getJeuPrincipal();
             jeuPrincipal.getExtensions().remove(jeuSociete);
-            repository.save(jeuPrincipal);
+            jeuSocieteRepository.save(jeuPrincipal);
         }
-        repository.delete(jeuSociete);
+        jeuSocieteRepository.delete(jeuSociete);
     }
 
     public void saveGame(JeuSociete jeuSociete) {
@@ -51,7 +74,11 @@ public class GameService {
                         }
                     }
         );
-        repository.save(jeuSociete);
+        String username = authenticationContext.getPrincipalName().get();
+        AppUser user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        jeuSociete.setOwner(user);
+        jeuSocieteRepository.save(jeuSociete);
     }
 
     public List<JeuSociete> findRandomGame(TypeJeu typeJeu, Integer nombreDeJoueurs, Duration tempsDeJeu) {

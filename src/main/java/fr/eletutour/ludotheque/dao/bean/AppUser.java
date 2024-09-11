@@ -1,10 +1,10 @@
 package fr.eletutour.ludotheque.dao.bean;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class AppUser {
@@ -21,6 +21,9 @@ public class AppUser {
 
     @NotEmpty
     private String role;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<JeuSociete> jeux = new ArrayList<>();
 
     public AppUser() {
     }
@@ -61,5 +64,13 @@ public class AppUser {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<JeuSociete> getJeux() {
+        return jeux;
+    }
+
+    public void setJeux(List<JeuSociete> jeux) {
+        this.jeux = jeux;
     }
 }
