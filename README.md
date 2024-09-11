@@ -9,6 +9,7 @@ Ce projet est une application de gestion de jeux de société permettant de rép
 - **Gestion des extensions** : Les jeux peuvent avoir des extensions, qui sont des ajouts spécifiques à un jeu principal.
 - **Affichage en arborescence** : Les jeux et leurs extensions sont affichés sous forme d'une hiérarchie pour une meilleure visualisation.
 - **Téléchargement d'images** : Associez des images aux jeux pour les rendre plus reconnaissables dans l'interface.
+- **Création de compte** : Depuis la page de login, vous avez la possibilité de créer un compte USER.
 - **Gestion des utilisateurs par l'administrateur** : Un utilisateur avec le rôle ADMIN peut gérer les utilisateurs (ajouter, modifier ou supprimer) via une interface dédiée.
 - **Sécurité** : L'application intègre une gestion de la sécurité avec authentification et autorisation basée sur les rôles des utilisateurs.
 
