@@ -18,11 +18,13 @@ import com.vaadin.flow.server.StreamResource;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.service.GameService;
 import fr.eletutour.ludotheque.views.form.GameForm;
+import jakarta.annotation.security.PermitAll;
 
 import java.io.ByteArrayInputStream;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Mes jeux")
+@PermitAll
 public class GamesListView extends VerticalLayout {
 
     private final GameService service;

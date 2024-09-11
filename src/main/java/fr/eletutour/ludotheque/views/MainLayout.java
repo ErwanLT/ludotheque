@@ -11,15 +11,19 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.dom.ThemeList;
+import com.vaadin.flow.spring.security.AuthenticationContext;
 import com.vaadin.flow.theme.lumo.Lumo;
+import fr.eletutour.ludotheque.views.admin.UserListView;
 import fr.eletutour.ludotheque.views.dashboards.DashboardCombinedView;
 import fr.eletutour.ludotheque.views.dashboards.DashboardTypeView;
 
 
 public class MainLayout extends AppLayout {
     Button toggleThemeButton;
+    private final AuthenticationContext authenticationContext;
 
-    public MainLayout() {
+    public MainLayout(AuthenticationContext authenticationContext) {
+        this.authenticationContext = authenticationContext;
         createHeader();
         createDrawer();
     }
@@ -30,6 +34,9 @@ public class MainLayout extends AppLayout {
         // Spacer pour pousser les composants suivants à droite
         HorizontalLayout spacer = new HorizontalLayout();
         spacer.setWidthFull();
+
+        var logout = new Button("Logout " + authenticationContext.getPrincipalName().orElse(""),
+                event -> authenticationContext.logout());
 
         // Bouton pour basculer entre les thèmes
         toggleThemeButton = new Button(VaadinIcon.ADJUST.create());
@@ -48,7 +55,8 @@ public class MainLayout extends AppLayout {
                 new DrawerToggle(),
                 logo,
                 spacer,          // Ajouter le spacer ici pour pousser le bouton à droite
-                toggleThemeButton
+                toggleThemeButton,
+                logout
         );
 
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -63,10 +71,8 @@ public class MainLayout extends AppLayout {
 
         SideNavItem listNavItem = new SideNavItem("Liste de jeux", GamesListView.class, VaadinIcon.LIST.create());
 
-
         SideNavItem dashboardNavItem = new SideNavItem("Dashboard");
         dashboardNavItem.setPrefixComponent(VaadinIcon.DASHBOARD.create());
-
         SideNavItem overviewNavItem = new SideNavItem("Jeux par type", DashboardTypeView.class, VaadinIcon.PIE_CHART.create());
         dashboardNavItem.addItem(overviewNavItem);
         SideNavItem combinedNavItem = new SideNavItem("Type / extension", DashboardCombinedView.class, VaadinIcon.LINE_CHART.create());
@@ -76,6 +82,9 @@ public class MainLayout extends AppLayout {
         sideNav.addItem(dashboardNavItem);  // Dashboard avec ses sous-items
         sideNav.addItem(new SideNavItem("Jeu Aléatoire", RandomGameSearchView.class, VaadinIcon.RANDOM.create()));
 
+        if(authenticationContext.hasRole("ADMIN")){
+            sideNav.addItem(new SideNavItem("Utilisateurs", UserListView.class));
+        }
         // Ajoute le SideNav au Drawer
         addToDrawer(sideNav);
     }

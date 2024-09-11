@@ -9,6 +9,7 @@ import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
 import fr.eletutour.ludotheque.views.MainLayout;
+import jakarta.annotation.security.PermitAll;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @Route(value = "type", layout = MainLayout.class)
 @PageTitle("Jeux par type")
 @JsModule("https://cdn.jsdelivr.net/npm/chart.js")
+@PermitAll
 public class DashboardTypeView extends DashboardBaseView {
 
     private final JeuSocieteRepository repository;
