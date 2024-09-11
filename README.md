@@ -47,6 +47,17 @@ http://localhost:8080
 ### Authentification
 Lors de la connexion, un utilisateur avec le rôle ADMIN a accès à des fonctionnalités supplémentaires, telles que la gestion des utilisateurs. Les utilisateurs avec le rôle USER ne peuvent voir et gérer que leurs propres jeux.
 
+### Enregistrement des utilisateurs
+L'application permet aux utilisateurs de créer leur propre compte via un formulaire d'enregistrement. Voici comment utiliser cette fonctionnalité :
+
+1. **Page de création de compte** : Sur la page de connexion, un bouton "Créer un compte" est disponible pour les nouveaux utilisateurs.
+2. **Création d'un compte** : Sur la page d'enregistrement, l'utilisateur doit renseigner un nom d'utilisateur et un mot de passe. Ces informations sont ensuite envoyées et le mot de passe est encodé avant d'être stocké de manière sécurisée dans la base de données.
+3. **Retour à la page de connexion** : Une fois le compte créé, l'utilisateur est redirigé vers la page de connexion pour accéder à l'application.
+
+Si vous êtes administrateur, vous n'avez plus besoin de créer des comptes manuellement pour chaque utilisateur. Ils peuvent désormais s'enregistrer eux-mêmes directement via l'interface.
+
+Cette fonctionnalité simplifie la gestion des utilisateurs et permet à l'application de gérer un plus grand nombre d'utilisateurs sans surcharge pour l'administrateur.
+
 ### Liste des Jeux
 La page principale affiche une liste de tous les jeux de société associés à l'utilisateur connecté. Vous pouvez filtrer cette liste en utilisant le champ de recherche en haut de la page.
 
