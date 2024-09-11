@@ -83,7 +83,12 @@ public class MainLayout extends AppLayout {
         sideNav.addItem(new SideNavItem("Jeu Aléatoire", RandomGameSearchView.class, VaadinIcon.RANDOM.create()));
 
         if(authenticationContext.hasRole("ADMIN")){
-            sideNav.addItem(new SideNavItem("Utilisateurs", UserListView.class));
+            SideNavItem adminNav = new SideNavItem("Administrateur");
+            adminNav.setPrefixComponent(VaadinIcon.USER_CARD.create());
+            SideNavItem users = new SideNavItem("Utilisateurs", UserListView.class, VaadinIcon.USERS.create());
+            adminNav.addItem(users);
+
+            sideNav.addItem(adminNav);
         }
         // Ajoute le SideNav au Drawer
         addToDrawer(sideNav);

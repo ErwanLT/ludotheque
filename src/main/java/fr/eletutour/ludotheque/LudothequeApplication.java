@@ -3,7 +3,6 @@ package fr.eletutour.ludotheque;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
-import fr.eletutour.ludotheque.configuration.security.PasswordConfig;
 import fr.eletutour.ludotheque.dao.bean.AppUser;
 import fr.eletutour.ludotheque.dao.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
