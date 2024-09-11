@@ -25,7 +25,7 @@ Avant de pouvoir exécuter ce projet, assurez-vous d'avoir les éléments suivan
 git clone https://github.com/votre-utilisateur/ludotheque.git
 cd ludotheque
 ```
-2. Configurez la base de données dans le fichier application.properties situé dans le répertoire src/main/resources/. Voici un exemple de configuration pour MySQL :
+2. Configurez la base de données dans le fichier application.properties situé dans le répertoire src/main/resources/. Voici un exemple de configuration pour H2 :
 ```properties
 spring.datasource.url=jdbc:h2:file:~/data/ludotheque;DB_CLOSE_ON_EXIT=FALSE
 spring.datasource.username=sa
