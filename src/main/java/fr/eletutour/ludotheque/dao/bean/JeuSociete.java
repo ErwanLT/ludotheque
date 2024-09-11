@@ -51,6 +51,10 @@ public class JeuSociete {
     @Column(nullable = true)
     private Double rating;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser owner;
+
     // Constructeurs, getters et setters
 
     public JeuSociete() {
@@ -186,5 +190,13 @@ public class JeuSociete {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public AppUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner(AppUser owner) {
+        this.owner = owner;
     }
 }

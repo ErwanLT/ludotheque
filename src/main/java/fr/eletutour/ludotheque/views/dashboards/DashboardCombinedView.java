@@ -7,7 +7,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
-import fr.eletutour.ludotheque.dao.repository.JeuSocieteRepository;
+import fr.eletutour.ludotheque.service.GameService;
 import fr.eletutour.ludotheque.views.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 @PermitAll
 public class DashboardCombinedView extends DashboardBaseView {
 
-    private final JeuSocieteRepository repository;
+    private final GameService gameService;
 
-    public DashboardCombinedView(JeuSocieteRepository repository) {
-        this.repository = repository;
+    public DashboardCombinedView(GameService gameService) {
+        this.gameService = gameService;
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         setSizeFull();
         Div chartContainer = new Div();
@@ -36,7 +36,7 @@ public class DashboardCombinedView extends DashboardBaseView {
     }
 
     private void loadChart() {
-        List<JeuSociete> jeux = repository.findAll();
+        List<JeuSociete> jeux = gameService.findAllGames("");
 
         // Dataset 1: Jeux par type
         Map<TypeJeu, Long> jeuxParType = jeux.stream()
