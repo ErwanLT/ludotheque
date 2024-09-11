@@ -43,4 +43,9 @@ public class UserService {
         }
         userRepository.delete(user);
     }
+
+    public void register(String username, String encodedPassword) {
+        AppUser appUser = new AppUser(username, encodedPassword, "ROLE_USER");
+        userRepository.save(appUser);
+    }
 }
