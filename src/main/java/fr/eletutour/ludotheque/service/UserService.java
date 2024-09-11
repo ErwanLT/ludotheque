@@ -30,4 +30,17 @@ public class UserService {
     public void saveUser(AppUser user) {
         userRepository.save(user);
     }
+
+    public void deleteUser(AppUser user) {
+        if (user.getRole().equals("ROLE_ADMIN")) {
+            // Compte le nombre d'utilisateurs avec le rôle "ROLE_ADMIN"
+            long adminCount = userRepository.countByRole("ROLE_ADMIN");
+
+            // Si c'est le seul administrateur, on empêche la suppression
+            if (adminCount <= 1) {
+                throw new IllegalStateException("Impossible de supprimer cet administrateur car c'est le seul présent.");
+            }
+        }
+        userRepository.delete(user);
+    }
 }
