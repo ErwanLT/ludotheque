@@ -6,12 +6,13 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import fr.eletutour.ludotheque.component.GameDetails;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
 import fr.eletutour.ludotheque.dao.bean.TypeJeu;
 import fr.eletutour.ludotheque.service.GameService;
+import jakarta.annotation.security.PermitAll;
 
 import java.time.Duration;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Random;
 
 @Route(value = "random-game", layout = MainLayout.class)
 @PageTitle("Jeu Aléatoire | Ma Ludothèque")
+@PermitAll
 public class RandomGameSearchView extends VerticalLayout {
 
     private final GameService gameService;
