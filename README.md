@@ -1,3 +1,4 @@
+[![Java CI with Maven](https://github.com/ErwanLT/ludotheque/actions/workflows/maven.yml/badge.svg)](https://github.com/ErwanLT/ludotheque/actions/workflows/maven.yml)
 # Ludothèque - Gestion des Jeux de Société
 Ce projet est une application de gestion de jeux de société permettant de répertorier, visualiser et gérer des jeux, y compris leurs extensions. L'application est construite avec Spring Boot et Vaadin pour une interface utilisateur fluide.
 
