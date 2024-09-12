@@ -19,6 +19,7 @@ public class RegisterView extends VerticalLayout {
     private final TextField username = new TextField("Nom d'utilisateur");
     private final PasswordField password = new PasswordField("Mot de passe");
     private final Button registerButton = new Button("S'enregistrer");
+    private final Button backButton = new Button("Retour page de login");
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
@@ -40,7 +41,10 @@ public class RegisterView extends VerticalLayout {
                 UI.getCurrent().navigate("login");
             }
         });
+        backButton.addClickListener(event -> {
+            UI.getCurrent().navigate("login");
+        });
 
-        add(username, password, registerButton);
+        add(username, password, registerButton, backButton);
     }
 }

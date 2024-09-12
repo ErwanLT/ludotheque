@@ -3,6 +3,7 @@ package fr.eletutour.ludotheque.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -49,7 +50,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 			UI.getCurrent().navigate("register");  // Naviguer vers une page d'enregistrement
 		});
 
-		add(new H1("Ludothèque"), login, createAccountButton);
+		add(new H1("Ludothèque"), new H2("Votre application de gestion de jeux de société"), login, createAccountButton);
 	}
 
 
