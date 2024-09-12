@@ -43,8 +43,9 @@ public class GamesListView extends VerticalLayout {
     }
 
     private void updateList() {
-        treeGrid.setItems(service.findAllGames(filterText.getValue()), JeuSociete::getExtensions);
-        treeGrid.getColumns().getFirst().setFooter(String.format("%s jeux", service.countGames()));
+        var listItems = service.findAllGames(filterText.getValue());
+        treeGrid.setItems(listItems, JeuSociete::getExtensions);
+        treeGrid.getColumns().getFirst().setFooter(String.format("%s jeux", listItems.size()));
     }
 
     private void configureForm() {

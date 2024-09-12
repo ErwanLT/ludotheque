@@ -105,7 +105,7 @@ public class UserListView extends VerticalLayout {
 
     private void updateList() {
         userGrid.setItems(userService.findAllUsers(filterText.getValue()));
-        userGrid.getColumns().getFirst().setFooter(String.format("%s jeux", userService.countUsers()));
+        userGrid.getColumns().getFirst().setFooter(String.format("%s pions ♟", userService.countUsers()));
     }
 
     private void closeEditor() {
