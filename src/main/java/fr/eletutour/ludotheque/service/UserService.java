@@ -5,6 +5,7 @@ import fr.eletutour.ludotheque.dao.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -21,6 +22,10 @@ public class UserService {
         } else {
             return userRepository.findByUsernameContainingIgnoreCase(stringFilter);
         }
+    }
+
+    public Optional<AppUser> findByUsername(String username){
+        return userRepository.findByUsername(username);
     }
 
     public long countUsers() {

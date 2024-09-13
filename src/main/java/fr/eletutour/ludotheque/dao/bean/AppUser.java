@@ -1,6 +1,7 @@
 package fr.eletutour.ludotheque.dao.bean;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.ArrayList;
@@ -24,6 +25,14 @@ public class AppUser {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<JeuSociete> jeux = new ArrayList<>();
+
+    @Lob
+    private byte[] image;
+
+    private String bio;
+
+    @Email
+    private String email;
 
     public AppUser() {
     }
@@ -72,5 +81,29 @@ public class AppUser {
 
     public void setJeux(List<JeuSociete> jeux) {
         this.jeux = jeux;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public @Email String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email String email) {
+        this.email = email;
     }
 }
