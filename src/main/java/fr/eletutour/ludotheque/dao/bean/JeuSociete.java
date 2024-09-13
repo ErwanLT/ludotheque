@@ -1,5 +1,6 @@
 package fr.eletutour.ludotheque.dao.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +15,7 @@ public class JeuSociete {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @NotBlank(message = "Le nom du jeu est obligatoire")
@@ -37,6 +39,7 @@ public class JeuSociete {
     private Duration tempsDeJeuEnMinutes;
 
     @Lob
+    @JsonIgnore
     private byte[] image;
 
     private boolean estExtension;
@@ -53,6 +56,7 @@ public class JeuSociete {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private AppUser owner;
 
     // Constructeurs, getters et setters

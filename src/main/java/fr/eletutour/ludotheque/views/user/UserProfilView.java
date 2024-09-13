@@ -1,5 +1,7 @@
 package fr.eletutour.ludotheque.views.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -19,16 +21,24 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamRegistration;
+import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import fr.eletutour.ludotheque.dao.bean.AppUser;
+import fr.eletutour.ludotheque.dao.bean.JeuSociete;
+import fr.eletutour.ludotheque.service.GameService;
 import fr.eletutour.ludotheque.service.UserService;
 import fr.eletutour.ludotheque.views.MainLayout;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 
 @Route(value = "profil", layout = MainLayout.class)
 @PageTitle("Mon profil")
@@ -36,6 +46,7 @@ import java.util.Base64;
 public class UserProfilView extends VerticalLayout {
 
     private final UserService userService;
+    private final GameService gameService;
     private final AuthenticationContext authenticationContext;
     private final PasswordEncoder passwordEncoder;
     private final Binder<AppUser> binder = new Binder<>(AppUser.class);
@@ -47,11 +58,14 @@ public class UserProfilView extends VerticalLayout {
     private final Image profileImage = new Image();
     private final EmailField email = new EmailField("Email");
 
+    Button exportButton = new Button("Exporter ma collection",VaadinIcon.DOWNLOAD.create(), e -> exportGames());
+
     private AppUser currentUser;
     private String passwordBeforeEdit;
 
-    public UserProfilView(UserService userService, AuthenticationContext authenticationContext, PasswordEncoder passwordEncoder) {
+    public UserProfilView(UserService userService, GameService gameService, AuthenticationContext authenticationContext, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.gameService = gameService;
         this.authenticationContext = authenticationContext;
         this.passwordEncoder = passwordEncoder;
 
@@ -116,7 +130,8 @@ public class UserProfilView extends VerticalLayout {
         add(
                 new H1("Mon Profil"),
                 profileImage,
-                content
+                content,
+                exportButton
         );
     }
 
@@ -152,6 +167,36 @@ public class UserProfilView extends VerticalLayout {
         } catch (ValidationException e) {
             Notification notification = Notification.show("Erreur lors de la mise à jour du profil.");
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
+    }
+
+    private void exportGames() {
+        try {
+            // Récupérer la collection de jeux de l'utilisateur connecté
+            List<JeuSociete> games = gameService.findAllGames("");
+
+            // Convertir en JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            String json = objectMapper.writeValueAsString(games);
+
+            // Créer un fichier temporaire
+            StreamResource resource = new StreamResource("collection.json", () -> {
+                try {
+                    return new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            });
+
+            final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+            UI.getCurrent().getPage().open(registration.getResourceUri().toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Notification error = Notification.show("Erreur lors de l'exportation des jeux.");
+            error.addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 }
