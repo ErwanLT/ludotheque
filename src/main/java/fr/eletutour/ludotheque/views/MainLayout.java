@@ -4,8 +4,12 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
@@ -35,8 +39,12 @@ public class MainLayout extends AppLayout {
         HorizontalLayout spacer = new HorizontalLayout();
         spacer.setWidthFull();
 
-        var logout = new Button("Logout " + authenticationContext.getPrincipalName().orElse(""),
-                event -> authenticationContext.logout());
+        MenuBar menuBar = new MenuBar();
+        MenuItem item = menuBar.addItem(authenticationContext.getPrincipalName().orElse(""));
+        SubMenu subMenu = item.getSubMenu();
+        subMenu.addItem("Profil", menuItemClickEvent -> UI.getCurrent().navigate("profil"));
+        subMenu.add(new Hr());
+        subMenu.addItem("Logout", menuItemClickEvent -> authenticationContext.logout());
 
         // Bouton pour basculer entre les thèmes
         toggleThemeButton = new Button(VaadinIcon.ADJUST.create());
@@ -54,9 +62,9 @@ public class MainLayout extends AppLayout {
         HorizontalLayout header = new HorizontalLayout(
                 new DrawerToggle(),
                 logo,
-                spacer,          // Ajouter le spacer ici pour pousser le bouton à droite
+                spacer,
                 toggleThemeButton,
-                logout
+                menuBar
         );
 
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);

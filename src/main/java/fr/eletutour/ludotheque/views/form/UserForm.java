@@ -8,8 +8,10 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -22,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserForm extends FormLayout {
     Binder<AppUser> binder = new BeanValidationBinder<>(AppUser.class);
     TextField username = new TextField("Username");
+    EmailField email = new EmailField("Email");
     PasswordField password = new PasswordField("Password");
     ComboBox<String> role = new ComboBox<>("Role");
 
@@ -43,8 +46,12 @@ public class UserForm extends FormLayout {
         binder.forField(password)
                 .withValidator(pass -> isEditing || !pass.isEmpty(), "Le mot de passe ne peut pas être vide")
                 .bind(AppUser::getPassword, AppUser::setPassword);
+        username.setReadOnly(true);
 
-        add(username, password, role, createButtonsLayout());
+        email.setClearButtonVisible(true);
+        email.setPrefixComponent(VaadinIcon.ENVELOPE.create());
+
+        add(username, email, password, role, createButtonsLayout());
     }
 
     public void setPasswordEncoder(PasswordEncoder passwordEncoder){
