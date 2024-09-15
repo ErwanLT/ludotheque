@@ -39,13 +39,13 @@ public class JeuSociete {
     private Duration tempsDeJeuEnMinutes;
 
     @Lob
-    @JsonIgnore
     private byte[] image;
 
     private boolean estExtension;
 
     @ManyToOne
     @JoinColumn(name = "jeu_principal_id")
+    @JsonIgnore
     private JeuSociete jeuPrincipal;
 
     @OneToMany(mappedBy = "jeuPrincipal", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -146,6 +146,7 @@ public class JeuSociete {
         this.tempsDeJeuEnMinutes = tempsDeJeuEnMinutes;
     }
 
+    @JsonIgnore
     public String getFormattedTempsDeJeu() {
         long hours = tempsDeJeuEnMinutes.toHours();
         long minutes = tempsDeJeuEnMinutes.toMinutes() % 60;
