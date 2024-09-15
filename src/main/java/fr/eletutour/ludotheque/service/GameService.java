@@ -1,5 +1,7 @@
 package fr.eletutour.ludotheque.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import fr.eletutour.ludotheque.dao.bean.AppUser;
 import fr.eletutour.ludotheque.dao.bean.JeuSociete;
@@ -9,6 +11,8 @@ import fr.eletutour.ludotheque.dao.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -105,5 +109,37 @@ public class GameService {
                 })
                 .toList();
 
+    }
+
+    public void importGames(InputStream inputStream) throws IOException {
+        String currentUsername = authenticationContext.getPrincipalName().get();
+        AppUser currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        // Convertir le JSON en liste de jeux
+        List<JeuSociete> importedGames = objectMapper.readValue(inputStream, objectMapper.getTypeFactory().constructCollectionType(List.class, JeuSociete.class));
+
+        for (JeuSociete jeu : importedGames) {
+            // Sauvegarder le jeu principal et ses extensions
+            saveGameAndExtensions(jeu, currentUser);
+        }
+    }
+
+    private void saveGameAndExtensions(JeuSociete jeu, AppUser owner) {
+        // Assigner l'utilisateur connecté comme propriétaire du jeu
+        jeu.setOwner(owner);
+
+        // Sauvegarder le jeu dans la base de données
+        jeuSocieteRepository.save(jeu);
+
+        // Gérer les extensions (récursivement)
+        for (JeuSociete extension : jeu.getExtensions()) {
+            extension.setJeuPrincipal(jeu); // Assigner le jeu principal à l'extension
+            extension.setOwner(owner); // Assigner l'utilisateur à l'extension
+            jeuSocieteRepository.save(extension);
+        }
     }
 }

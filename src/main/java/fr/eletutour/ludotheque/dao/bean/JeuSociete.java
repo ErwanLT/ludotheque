@@ -1,5 +1,6 @@
 package fr.eletutour.ludotheque.dao.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +15,7 @@ public class JeuSociete {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @NotBlank(message = "Le nom du jeu est obligatoire")
@@ -43,6 +45,7 @@ public class JeuSociete {
 
     @ManyToOne
     @JoinColumn(name = "jeu_principal_id")
+    @JsonIgnore
     private JeuSociete jeuPrincipal;
 
     @OneToMany(mappedBy = "jeuPrincipal", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -53,6 +56,7 @@ public class JeuSociete {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private AppUser owner;
 
     // Constructeurs, getters et setters
@@ -142,6 +146,7 @@ public class JeuSociete {
         this.tempsDeJeuEnMinutes = tempsDeJeuEnMinutes;
     }
 
+    @JsonIgnore
     public String getFormattedTempsDeJeu() {
         long hours = tempsDeJeuEnMinutes.toHours();
         long minutes = tempsDeJeuEnMinutes.toMinutes() % 60;

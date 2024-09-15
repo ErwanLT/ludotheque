@@ -1,5 +1,7 @@
 package fr.eletutour.ludotheque.views.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -8,6 +10,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -19,16 +22,24 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamRegistration;
+import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import fr.eletutour.ludotheque.dao.bean.AppUser;
+import fr.eletutour.ludotheque.dao.bean.JeuSociete;
+import fr.eletutour.ludotheque.service.GameService;
 import fr.eletutour.ludotheque.service.UserService;
 import fr.eletutour.ludotheque.views.MainLayout;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 
 @Route(value = "profil", layout = MainLayout.class)
 @PageTitle("Mon profil")
@@ -36,6 +47,7 @@ import java.util.Base64;
 public class UserProfilView extends VerticalLayout {
 
     private final UserService userService;
+    private final GameService gameService;
     private final AuthenticationContext authenticationContext;
     private final PasswordEncoder passwordEncoder;
     private final Binder<AppUser> binder = new Binder<>(AppUser.class);
@@ -47,11 +59,16 @@ public class UserProfilView extends VerticalLayout {
     private final Image profileImage = new Image();
     private final EmailField email = new EmailField("Email");
 
+    HorizontalLayout boutonLayout = new HorizontalLayout();
+    Button exportButton = new Button("Exporter ma collection",VaadinIcon.DOWNLOAD.create(), e -> exportGames());
+    Upload uploadButton = new Upload();
+
     private AppUser currentUser;
     private String passwordBeforeEdit;
 
-    public UserProfilView(UserService userService, AuthenticationContext authenticationContext, PasswordEncoder passwordEncoder) {
+    public UserProfilView(UserService userService, GameService gameService, AuthenticationContext authenticationContext, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.gameService = gameService;
         this.authenticationContext = authenticationContext;
         this.passwordEncoder = passwordEncoder;
 
@@ -72,21 +89,7 @@ public class UserProfilView extends VerticalLayout {
         email.setClearButtonVisible(true);
         email.setPrefixComponent(VaadinIcon.ENVELOPE.create());
 
-        MemoryBuffer buffer = new MemoryBuffer();
-        upload.setWidthFull(); // Prend toute la largeur
-        upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
-        upload.setMaxFileSize(2 * 1024 * 1024); // 2 MB
-        upload.setMaxFiles(1);
-        upload.setReceiver(buffer);
-        upload.addSucceededListener(event -> {
-            try {
-                currentUser.setImage(buffer.getInputStream().readAllBytes());
-                Notification.show("Photo téléchargée avec succès");
-            } catch (IOException e) {
-                Notification error = Notification.show("Problème rencontré lors du téléchargement de la photo");
-                error.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
+        uploadProfilImage();
 
         // Récupération et configuration des données utilisateur
         authenticationContext.getPrincipalName().ifPresent(name -> {
@@ -113,11 +116,51 @@ public class UserProfilView extends VerticalLayout {
         Div content = new Div(username, email, password, bio, upload, saveButton);
         content.setWidth("50%"); // 50% de la largeur de l'écran, ajustable selon besoin
 
+        uploardCollection(gameService);
+        boutonLayout.add(exportButton, uploadButton);
+
         add(
                 new H1("Mon Profil"),
                 profileImage,
-                content
+                content,
+                boutonLayout
         );
+    }
+
+    private void uploadProfilImage() {
+        MemoryBuffer buffer = new MemoryBuffer();
+        upload.setWidthFull(); // Prend toute la largeur
+        upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
+        upload.setMaxFileSize(2 * 1024 * 1024); // 2 MB
+        upload.setMaxFiles(1);
+        upload.setReceiver(buffer);
+        upload.addSucceededListener(event -> {
+            try {
+                currentUser.setImage(buffer.getInputStream().readAllBytes());
+                Notification.show("Photo téléchargée avec succès");
+            } catch (IOException e) {
+                Notification error = Notification.show("Problème rencontré lors du téléchargement de la photo");
+                error.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+    }
+
+    private void uploardCollection(GameService gameService) {
+        MemoryBuffer uploadBuffer = new MemoryBuffer();
+        uploadButton.setAcceptedFileTypes("application/json");
+        uploadButton.setReceiver(uploadBuffer);
+        uploadButton.setMaxFiles(1);
+        uploadButton.addSucceededListener(event -> {
+            try {
+                gameService.importGames(uploadBuffer.getInputStream());
+                Notification success = Notification.show("Import réussi");
+                success.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Notification error = Notification.show("Erreur lors de l'importation des jeux");
+                error.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
     }
 
     private void showProfileImage(byte[] imageBytes) {
@@ -152,6 +195,38 @@ public class UserProfilView extends VerticalLayout {
         } catch (ValidationException e) {
             Notification notification = Notification.show("Erreur lors de la mise à jour du profil.");
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
+    }
+
+    private void exportGames() {
+        try {
+            // Récupérer la collection de jeux de l'utilisateur connecté
+            List<JeuSociete> games = gameService.findAllGames("");
+
+            // Convertir en JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            String json = objectMapper.writeValueAsString(games);
+
+            // Créer un fichier temporaire
+            StreamResource resource = new StreamResource("collection.json", () -> {
+                try {
+                    return new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Notification error = Notification.show("Erreur lors de l'exportation des jeux.");
+                    error.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    return null;
+                }
+            });
+
+            final StreamRegistration registration = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+            UI.getCurrent().getPage().open(registration.getResourceUri().toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Notification error = Notification.show("Erreur lors de l'exportation des jeux.");
+            error.addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 }
