@@ -46,7 +46,6 @@ public class UserForm extends FormLayout {
         binder.forField(password)
                 .withValidator(pass -> isEditing || !pass.isEmpty(), "Le mot de passe ne peut pas être vide")
                 .bind(AppUser::getPassword, AppUser::setPassword);
-        username.setReadOnly(true);
 
         email.setClearButtonVisible(true);
         email.setPrefixComponent(VaadinIcon.ENVELOPE.create());
@@ -141,6 +140,9 @@ public class UserForm extends FormLayout {
         if (isEditing) {
             password.clear();
             password.setPlaceholder("Laisser vide pour conserver le mot de passe actuel");
+            username.setReadOnly(true);
+        } else {
+            username.setReadOnly(false);
         }
     }
 }
